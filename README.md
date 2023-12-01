@@ -1,4 +1,4 @@
-# order_admin
+# restaurant_admin
 
 A new Flutter project.
 
