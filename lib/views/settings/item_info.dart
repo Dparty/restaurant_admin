@@ -153,6 +153,11 @@ class _EditItemPageState extends State<EditItemPage> {
   }
 
   void create() async {
+    if (_selectedPrinters!.isEmpty) {
+      loading = false;
+      showAlertDialog(context, "請先創建打印機");
+      return;
+    }
     var res = await createItem(
         context.read<RestaurantProvider>().id,
         PutItem(
