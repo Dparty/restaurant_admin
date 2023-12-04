@@ -8,7 +8,7 @@ Widget itemCard(BuildContext context, item, {Function()? onTap, String? type}) {
           const EdgeInsets.only(top: 5.0, bottom: 5.0, left: 5.0, right: 5.0),
       child: GestureDetector(
           key: Key(item.id),
-          onTap: item.status == Status.ACTIVED.name ? onTap : () => {},
+          onTap: item.status == Status.ACTIVED.name ? onTap : onTap,
           child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
