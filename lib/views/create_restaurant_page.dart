@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:restaurant_admin/api/restaurant.dart';
 import 'package:restaurant_admin/components/dialog.dart';
 import 'package:restaurant_admin/components/dynamic_textfield.dart';
+import 'package:restaurant_admin/configs/constants.dart';
 import 'package:restaurant_admin/models/restaurant.dart';
 
 class CreateRestaurantPage extends StatefulWidget {
@@ -17,6 +18,8 @@ class _CreateRestaurantPageState extends State<CreateRestaurantPage> {
   TextEditingController? name;
   TextEditingController? description;
   List<TextEditingController>? _listController = [TextEditingController()];
+  final TextEditingController _confirmName = TextEditingController();
+  String? valueText;
 
   @override
   void initState() {
@@ -28,6 +31,51 @@ class _CreateRestaurantPageState extends State<CreateRestaurantPage> {
         : widget.restaurant?.categories
             .map((e) => TextEditingController(text: e))
             .toList();
+  }
+
+  Future<void> _displayTextInputDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('請輸入完整餐廳名字確認'),
+            content: TextField(
+              onChanged: (value) {
+                setState(() {
+                  valueText = value;
+                });
+              },
+              controller: _confirmName,
+              decoration: const InputDecoration(hintText: "請輸入完整餐廳名字確認"),
+            ),
+            actions: <Widget>[
+              MaterialButton(
+                textColor: kPrimaryColor,
+                child: const Text('取消'),
+                onPressed: () {
+                  setState(() {
+                    _confirmName.text = "";
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+              MaterialButton(
+                color: kPrimaryColor,
+                textColor: Colors.white,
+                child: const Text('確認刪除'),
+                onPressed: () {
+                  if (valueText == widget.restaurant?.name) {
+                    delete();
+                  } else {
+                    _confirmName.text = "";
+                    Navigator.pop(context);
+                    showAlertDialog(context, "名稱不一致，無法刪除");
+                  }
+                },
+              ),
+            ],
+          );
+        });
   }
 
   create() {
@@ -57,8 +105,11 @@ class _CreateRestaurantPageState extends State<CreateRestaurantPage> {
   }
 
   delete() {
-    deleteRestaurant(widget.restaurant!.id)
-        .then((value) => Navigator.pop(context));
+    deleteRestaurant(widget.restaurant!.id).then((value) {
+      Navigator.pop(context);
+      showAlertDialog(context, "刪除成功",
+          onConfirmed: () => Navigator.pop(context));
+    });
   }
 
   List<String> getCategoriesList(String str) {
@@ -128,7 +179,10 @@ class _CreateRestaurantPageState extends State<CreateRestaurantPage> {
                           width: 100,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: delete,
+                            onPressed: () async {
+                              await _displayTextInputDialog(context);
+                              _confirmName.text = '';
+                            },
                             child: const Text('刪除餐廳'),
                           ),
                         ),

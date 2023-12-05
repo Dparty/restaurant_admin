@@ -35,6 +35,13 @@ class _RestaurantState extends State<RestaurantsPage> {
     });
   }
 
+  createRestaurant() async {
+    await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return const CreateRestaurantPage();
+    }));
+    loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +61,10 @@ class _RestaurantState extends State<RestaurantsPage> {
               icon: const Icon(Icons.logout))
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: kPrimaryColor,
+          onPressed: createRestaurant,
+          child: const Icon(Icons.add)),
       body: Center(
           child: ListView.builder(
               itemCount: restaurantList.data.length,
