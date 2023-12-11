@@ -200,6 +200,33 @@ class Printer {
       );
 }
 
+class DiscountList {
+  final List<Discount> data;
+
+  DiscountList({required this.data});
+  factory DiscountList.fromJson(List<dynamic> json) => DiscountList(
+      data: List<Discount>.from(
+          (json as Iterable).map((discount) => Discount.fromJson(discount))));
+}
+
+class Discount {
+  final String id;
+  final String label;
+  final int offset;
+
+  Discount({
+    required this.id,
+    required this.label,
+    required this.offset,
+  });
+
+  factory Discount.fromJson(Map<String, dynamic> json) => Discount(
+        id: json['id'],
+        label: json['label'],
+        offset: json['offset'],
+      );
+}
+
 class Table {
   final String id;
   final String label;

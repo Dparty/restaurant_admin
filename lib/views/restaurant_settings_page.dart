@@ -3,6 +3,7 @@ import 'package:restaurant_admin/components/dialog.dart';
 import 'package:restaurant_admin/views/components/default_layout.dart';
 import 'package:restaurant_admin/views/settings/tables/config_table_page.dart';
 import 'package:restaurant_admin/views/settings/printers/config_printer_page.dart';
+import 'package:restaurant_admin/views/settings/discount/config_discount_page.dart';
 
 import 'package:restaurant_admin/models/restaurant.dart' as model;
 import '../api/restaurant.dart';
@@ -59,6 +60,10 @@ class _RestaurantSettingsPageState extends State<RestaurantSettingsPage>
           printers = list.data;
           context.read<RestaurantProvider>().setRestaurantPrinter(list.data);
         }));
+
+    listDiscount(widget.restaurantId).then((list) => setState(() {
+          context.read<RestaurantProvider>().setRestaurantDiscount(list.data);
+        }));
   }
 
   @override
@@ -104,11 +109,12 @@ class _RestaurantSettingsPageState extends State<RestaurantSettingsPage>
           showSettings: true,
         ),
       ),
-      centerTitle: ["品項設置", "餐桌設置", "打印機設置"][_selectedNavIndex],
+      centerTitle: ["品項設置", "餐桌設置", "打印機設置", "折扣設置"][_selectedNavIndex],
       center: [
         ConfigItem(),
         ConfigTablePage(restaurantId),
         const ConfigPrinter(),
+        ConfigDiscount(restaurantId),
       ][_selectedNavIndex],
     );
   }

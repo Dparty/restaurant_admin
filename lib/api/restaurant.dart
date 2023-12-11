@@ -289,3 +289,40 @@ Future<Bill> createBill(
     throw Exception('Failed to create bill');
   }
 }
+
+Future<DiscountList> listDiscount(String restaurantId) async {
+  final token = await getToken();
+  final response = await http.get(
+      Uri.parse("$baseUrl/restaurants/$restaurantId/discounts"),
+      headers: {'Authorization': "bearer $token"});
+  if (response.statusCode == 200) {
+    return DiscountList.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to create restaurant');
+  }
+}
+
+Future<Discount> createDiscount(String id, String label, int extra) async {
+  final token = await getToken();
+  final response =
+      await http.post(Uri.parse("$baseUrl/restaurants/$id/discounts"),
+          body: jsonEncode({
+            'label': label,
+            'offset': extra,
+          }),
+          headers: {'Authorization': "bearer $token"});
+  if (response.statusCode == 201) {
+    return Discount.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to create restaurant');
+  }
+}
+
+Future<void> deleteDiscount(String id) async {
+  final token = await getToken();
+  final response = await http.delete(Uri.parse("$baseUrl/discounts/$id"),
+      headers: {'Authorization': "bearer $token"});
+  if (response.statusCode != 204) {
+    throw Exception('Failed to create restaurant');
+  }
+}

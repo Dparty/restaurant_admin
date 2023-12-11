@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_admin/api/utils.dart';
+import 'package:restaurant_admin/provider/selected_discount_provider.dart';
 import 'package:restaurant_admin/provider/selected_item_provider.dart';
 import 'package:restaurant_admin/provider/selected_printer_provider.dart';
 import 'package:restaurant_admin/views/restaurant_page.dart';
@@ -24,6 +25,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RestaurantProvider()),
         ChangeNotifierProvider(create: (_) => SelectedTableProvider()),
         ChangeNotifierProvider(create: (_) => SelectedPrinterProvider()),
+        ChangeNotifierProvider(create: (_) => SelectedDiscountProvider()),
         ChangeNotifierProvider(create: (_) => SelectedItemProvider()),
       ],
       child: MaterialApp(

@@ -303,40 +303,6 @@ class _EditItemPageState extends State<EditItemPage> {
                           return null;
                         },
                       ),
-                      // TextFormField(
-                      //   controller: tag,
-                      //   decoration: const InputDecoration(
-                      //     hintText: '分類',
-                      //   ),
-                      //   autovalidateMode: AutovalidateMode.onUserInteraction,
-                      //   validator: (String? value) {
-                      //     if (value == null || value.isEmpty) {
-                      //       return '請輸入品項分類';
-                      //     }
-                      //     return null;
-                      //   },
-                      // ),
-                      // Autocomplete<String>(
-                      //   optionsBuilder: (TextEditingValue textEditingValue) {
-                      //     return categories!.where((String option) {
-                      //       return option
-                      //           .contains(textEditingValue.text.toLowerCase());
-                      //     });
-                      //   },
-                      //   onSelected: (String selection) {
-                      //     debugPrint('You just selected $selection');
-                      //   },
-                      // ),      // Autocomplete<String>(
-                      //   optionsBuilder: (TextEditingValue textEditingValue) {
-                      //     return categories!.where((String option) {
-                      //       return option
-                      //           .contains(textEditingValue.text.toLowerCase());
-                      //     });
-                      //   },
-                      //   onSelected: (String selection) {
-                      //     debugPrint('You just selected $selection');
-                      //   },
-                      // ),
 
                       TextFormField(
                         controller: tag,

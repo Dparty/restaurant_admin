@@ -24,10 +24,6 @@ class ItemCardListView extends StatefulWidget {
 class _ItemCardListViewState extends State<ItemCardListView> {
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    final double itemHeight = (size.height + 500.0) / 2;
-    final double itemWidth = size.width / 2;
-
     return Scaffold(
       backgroundColor: const Color(0xFFFCFAF8),
       body: ListView(
@@ -38,12 +34,19 @@ class _ItemCardListViewState extends State<ItemCardListView> {
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               width: MediaQuery.of(context).size.width - 30.0,
               height: MediaQuery.of(context).size.height - 210.0,
+              // child: ListView(
+              //     physics: const PageScrollPhysics(),
+              //     primary: false,
+              //     children: [
+              //       ...widget.itemList!
+              //           .map((item) => itemCard(context, item, onTap: () {
+              //                 widget.onTap!(item);
+              //               }, type: widget.type))
+              //           .toList()
+              //     ])),
               child: GridView.count(
                   physics: const PageScrollPhysics(),
-                  // crossAxisCount: widget.crossAxisCount,
-                  crossAxisCount:
-                      MediaQuery.of(context).size.width > 1440 ? 4 : 3,
-                  // childAspectRatio: (itemWidth / itemHeight),
+                  crossAxisCount: widget.crossAxisCount,
                   childAspectRatio: 1,
                   primary: false,
                   children: [
