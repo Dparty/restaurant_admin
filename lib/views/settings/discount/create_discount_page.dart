@@ -28,6 +28,7 @@ class _CreateDiscountPageState extends State<CreateDiscountPage> {
   final _formKey = GlobalKey<FormState>();
   final String restaurantId;
   Discount? discount;
+  int _currentSliderValue = 0;
   TextEditingController? label;
   TextEditingController? offset;
   _CreateDiscountPageState(this.restaurantId);
@@ -41,7 +42,7 @@ class _CreateDiscountPageState extends State<CreateDiscountPage> {
   void didChangeDependencies() {
     discount = context.watch<SelectedDiscountProvider>().selectedDiscount;
     label = TextEditingController(text: discount?.label);
-    offset = TextEditingController(text: discount?.offset.toString());
+    offset = TextEditingController(text: discount?.offset.toString() ?? '0');
     super.didChangeDependencies();
   }
 
@@ -88,20 +89,30 @@ class _CreateDiscountPageState extends State<CreateDiscountPage> {
                     return null;
                   },
                 ),
-                TextFormField(
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  controller: offset,
-                  decoration: const InputDecoration(
-                    hintText: '折扣',
-                  ),
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return '輸入折扣';
-                    }
-                    return null;
-                  },
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      child: Text(
+                        '折扣：${offset!.text} %',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    Expanded(
+                      child: Slider(
+                        min: -100,
+                        max: 100,
+                        value: _currentSliderValue.toDouble(),
+                        label: _currentSliderValue.round().toString(),
+                        onChanged: (double value) {
+                          setState(() {
+                            _currentSliderValue = value.toInt();
+                            offset?.text = _currentSliderValue.toString();
+                          });
+                        },
+                      ),
+                    )
+                  ],
                 ),
                 discount == null
                     ? Padding(

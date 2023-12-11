@@ -41,7 +41,7 @@ class DiscountCard extends StatelessWidget {
                           maxLines: 2,
                         ),
                         const SizedBox(height: 10),
-                        Text("折扣：${discount.offset}"),
+                        Text("折扣：${discount.offset} %"),
                         const SizedBox(height: 5),
                       ],
                     )),
