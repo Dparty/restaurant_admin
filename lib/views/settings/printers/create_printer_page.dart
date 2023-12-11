@@ -157,7 +157,7 @@ class _CreatePrinterPageState extends State<CreatePrinterPage> {
                   child: Row(
                     // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text("模型：", style: TextStyle(fontSize: 16)),
+                      const Text("型號：", style: TextStyle(fontSize: 16)),
                       const SizedBox(
                         width: 20,
                       ),
