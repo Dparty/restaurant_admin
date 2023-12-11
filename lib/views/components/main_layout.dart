@@ -5,9 +5,14 @@ class MainLayout extends StatelessWidget {
   final Widget center;
   final String centerTitle;
   final Widget? right;
+  final bool? automaticallyImplyLeading;
 
   const MainLayout(
-      {Key? key, required this.center, required this.centerTitle, this.right})
+      {Key? key,
+      required this.center,
+      required this.centerTitle,
+      this.right,
+      this.automaticallyImplyLeading})
       : super(key: key);
 
   @override
@@ -17,7 +22,7 @@ class MainLayout extends StatelessWidget {
         Expanded(
             child: Scaffold(
           appBar: AppBar(
-            automaticallyImplyLeading: false,
+            automaticallyImplyLeading: automaticallyImplyLeading ?? false,
             backgroundColor: Colors.white,
             elevation: 0.0,
             centerTitle: true,

@@ -76,6 +76,29 @@ class NavBar extends StatelessWidget {
                         const SizedBox(
                           height: 30,
                         ),
+                        DrawerItem(
+                            name: '折扣設置',
+                            icon: Icons.discount,
+                            onPressed: () =>
+                                onItemPressed(context, index: 3, onTap: onTap)),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        // const Divider(
+                        //   thickness: 1,
+                        //   height: 10,
+                        //   color: Colors.grey,
+                        // ),
+                        // const SizedBox(
+                        //   height: 30,
+                        // ),
+                        // DrawerItem(
+                        //     name: '訂單管理',
+                        //     icon: Icons.print,
+                        //     onPressed: () => onItemPressed(context, index: 6)),
+                        // const SizedBox(
+                        //   height: 30,
+                        // ),
                         const Divider(
                           thickness: 1,
                           height: 10,
@@ -109,6 +132,14 @@ class NavBar extends StatelessWidget {
     context.read<SelectedItemProvider>().resetSelectItem();
 
     switch (index) {
+      // case 6:
+      //   Navigator.pop(context);
+      //   Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //           builder: (context) => OrderManagement(restaurant.id)));
+      //
+      //   break;
       case 4:
         Navigator.pop(context);
         context.read<RestaurantProvider>().resetRestaurant();

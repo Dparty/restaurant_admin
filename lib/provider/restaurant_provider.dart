@@ -7,6 +7,7 @@ class RestaurantProvider with ChangeNotifier {
   String _description = '';
   List<model.Item> _items = [];
   List<model.Printer> _printers = [];
+  List<model.Discount> _discount = [];
   List<model.Table> _tables = [];
   List<String> _categories = [];
 
@@ -19,6 +20,7 @@ class RestaurantProvider with ChangeNotifier {
   List<model.Printer> get printers => _printers;
   List<model.Table> get tables => _tables;
   List<String> get categories => _categories;
+  List<model.Discount> get discount => _discount;
 
   Map<String, Iterable<model.Item>> classification(Iterable<model.Item> items) {
     var itemsMap = <String, List<model.Item>>{};
@@ -54,9 +56,15 @@ class RestaurantProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setRestaurantDiscount(List<model.Discount> discount) {
+    _discount = discount;
+    notifyListeners();
+  }
+
   void resetRestaurant() {
     setRestaurant('', '', '', [], [], []);
     setRestaurantPrinter([]);
+    setRestaurantDiscount([]);
     notifyListeners();
   }
 }
