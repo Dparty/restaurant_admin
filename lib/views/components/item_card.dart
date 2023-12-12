@@ -2,8 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:restaurant_admin/models/restaurant.dart';
 import 'package:restaurant_admin/api/config.dart';
 
-Widget itemCard(BuildContext context, item, {Function()? onTap, String? type}) {
+Widget itemCard(BuildContext context, item,
+    {Function()? onTap, String? type, selectedItem}) {
   return Card(
+    shape: selectedItem?.id == item.id
+        ? RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+            side: BorderSide(
+              color: const Color(0xFFCC8053).withOpacity(0.6),
+              width: 1,
+            ),
+          )
+        : RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
     margin: const EdgeInsets.all(10.0),
     child: GestureDetector(
       key: Key(item.id),
