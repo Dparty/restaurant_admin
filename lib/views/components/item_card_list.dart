@@ -15,6 +15,7 @@ class ItemCardListView extends StatefulWidget {
     required this.crossAxisCount,
     this.onTap,
     this.type,
+    this.selectedItem,
   }) : super(key: key);
 
   @override
@@ -50,7 +51,9 @@ class _ItemCardListViewState extends State<ItemCardListView> {
                     ...widget.itemList!
                         .map((item) => itemCard(context, item, onTap: () {
                               widget.onTap!(item);
-                            }, type: widget.type))
+                            },
+                                type: widget.type,
+                                selectedItem: widget.selectedItem))
                         .toList()
                   ])),
           const SizedBox(height: 15.0)
