@@ -318,6 +318,20 @@ Future<Discount> createDiscount(String id, String label, int extra) async {
   }
 }
 
+Future<void> updateDiscount(String id, String label, int extra) async {
+  final token = await getToken();
+  final response = await http.put(Uri.parse("$baseUrl/discounts/$id"),
+      body: jsonEncode({
+        'label': label,
+        'offset': extra,
+      }),
+      headers: {'Authorization': "bearer $token"});
+  if (response.statusCode == 204) {
+  } else {
+    throw Exception('Failed to update discount');
+  }
+}
+
 Future<void> deleteDiscount(String id) async {
   final token = await getToken();
   final response = await http.delete(Uri.parse("$baseUrl/discounts/$id"),

@@ -56,12 +56,11 @@ class _CreateDiscountPageState extends State<CreateDiscountPage> {
   }
 
   void update() {
-    // updatePrinter(printer!.id, name!.text, sn!.text, printerType,
-    //         description!.text ?? '', printerModel)
-    //     .then((value) {
-    //   showAlertDialog(context, "更新成功");
-    //   widget.reload!();
-    // });
+    updateDiscount(discount!.id, label!.text, int.parse(offset!.text))
+        .then((value) {
+      showAlertDialog(context, "更新成功");
+      widget.reload!();
+    });
   }
 
   @override
