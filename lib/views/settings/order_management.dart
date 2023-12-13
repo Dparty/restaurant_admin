@@ -72,12 +72,18 @@ class _OrderManagementState extends State<OrderManagement> {
   bool sort = true;
   List<Bill>? filterData;
 
-  onsortColumn(int columnIndex, bool ascending) {
+  onSortColumn(int columnIndex, bool ascending) {
     if (columnIndex == 0) {
-      if (ascending) {
+      if (sort) {
         filterData!.sort((a, b) => a.id!.compareTo(b.id!));
       } else {
         filterData!.sort((a, b) => b.id!.compareTo(a.id!));
+      }
+    } else if (columnIndex == 5) {
+      if (sort) {
+        filterData!.sort((a, b) => a.total!.compareTo(b.total!));
+      } else {
+        filterData!.sort((a, b) => b.total!.compareTo(a.total!));
       }
     }
   }
@@ -185,13 +191,16 @@ class _OrderManagementState extends State<OrderManagement> {
                         }
                       },
                       child: const Text("選擇日期")),
-                  Expanded(
+                  const SizedBox(
+                    width: 50,
+                  ),
+                  SizedBox(
+                    width: 350,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: RadioListTile(
-                            title: const Text("全選"),
+                        Row(children: [
+                          Radio(
                             value: "",
                             groupValue: type,
                             onChanged: (value) {
@@ -209,10 +218,13 @@ class _OrderManagementState extends State<OrderManagement> {
                               });
                             },
                           ),
-                        ),
-                        Expanded(
-                          child: RadioListTile(
-                            title: const Text("已提交"),
+                          const Text(
+                            '全部',
+                            style: TextStyle(fontSize: 17.0),
+                          ),
+                        ]),
+                        Row(children: [
+                          Radio(
                             value: "SUBMITTED",
                             groupValue: type,
                             onChanged: (value) {
@@ -231,28 +243,36 @@ class _OrderManagementState extends State<OrderManagement> {
                               });
                             },
                           ),
-                        ),
-                        Expanded(
-                            child: RadioListTile(
-                          title: const Text("已完成"),
-                          value: "PAIED",
-                          groupValue: type,
-                          onChanged: (value) {
-                            setState(() {
-                              type = value.toString();
-                              listBills(restaurantId, status: "PAIED")
-                                  .then((orders) {
-                                oldOrders = context
-                                    .read<SelectedTableProvider>()
-                                    .tableOrders;
+                          const Text(
+                            '已提交',
+                            style: TextStyle(fontSize: 17.0),
+                          ),
+                        ]),
+                        Row(children: [
+                          Radio(
+                            value: "PAIED",
+                            groupValue: type,
+                            onChanged: (value) {
+                              setState(() {
+                                type = value.toString();
+                                listBills(restaurantId, status: "PAIED")
+                                    .then((orders) {
+                                  oldOrders = context
+                                      .read<SelectedTableProvider>()
+                                      .tableOrders;
 
-                                context
-                                    .read<SelectedTableProvider>()
-                                    .setAllTableOrders(orders);
+                                  context
+                                      .read<SelectedTableProvider>()
+                                      .setAllTableOrders(orders);
+                                });
                               });
-                            });
-                          },
-                        )),
+                            },
+                          ),
+                          const Text(
+                            '已完成',
+                            style: TextStyle(fontSize: 17.0),
+                          ),
+                        ]),
                       ],
                     ),
                   )
@@ -278,17 +298,23 @@ class _OrderManagementState extends State<OrderManagement> {
                         setState(() {
                           sort = !sort;
                         });
-
-                        onsortColumn(columnIndex, ascending);
+                        onSortColumn(columnIndex, ascending);
                       }),
                   const DataColumn(label: Text('取餐號')),
                   const DataColumn(label: Text('訂單時間')),
                   const DataColumn(label: Text('點餐桌')),
                   const DataColumn(label: Text('訂單狀態')),
-                  const DataColumn(label: Text('訂單總額')),
+                  DataColumn(
+                      label: const Text('訂單總額'),
+                      onSort: (columnIndex, ascending) {
+                        setState(() {
+                          sort = !sort;
+                        });
+                        onSortColumn(columnIndex, ascending);
+                      }),
                   const DataColumn(label: Text('訂單詳情')),
                 ],
-                columnSpacing: 60,
+                columnSpacing: 70,
                 horizontalMargin: 10,
                 showCheckboxColumn: false,
               ),
@@ -296,94 +322,6 @@ class _OrderManagementState extends State<OrderManagement> {
           ),
         ));
   }
-}
-
-TableRow tableRow(context, {id, image, pickupCode, tableLabel, status, color}) {
-  return TableRow(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey,
-            width: 0.5,
-          ),
-        ),
-      ),
-      children: [
-        //Full Name
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 15),
-          child: Row(
-            children: [
-              const SizedBox(
-                width: 10,
-              ),
-              Text(id)
-            ],
-          ),
-        ),
-        // Designation
-        Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: color,
-              ),
-              height: 10,
-              width: 10,
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(pickupCode.toString()),
-          ],
-        ),
-
-        Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: color,
-              ),
-              height: 10,
-              width: 10,
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(tableLabel),
-          ],
-        ),
-
-        //Status
-        Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: color,
-              ),
-              height: 10,
-              width: 10,
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(status),
-          ],
-        ),
-      ]);
-}
-
-Widget tableHeader(text) {
-  return Container(
-    margin: const EdgeInsets.symmetric(vertical: 15),
-    child: Text(
-      text,
-      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-    ),
-  );
 }
 
 // The "soruce" of the table

@@ -31,7 +31,12 @@ class RestaurantProvider with ChangeNotifier {
         itemsMap[item.tags[0]]!.add(item);
       }
     });
-    return itemsMap;
+
+    var sortItemsMap = <String, List<model.Item>>{};
+    categories.where((e) => itemsMap.keys.contains(e)).forEach((element) {
+      sortItemsMap[element] = itemsMap[element]!;
+    });
+    return sortItemsMap;
   }
 
   void setRestaurant(

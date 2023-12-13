@@ -153,52 +153,38 @@ class _CreateRestaurantPageState extends State<CreateRestaurantPage> {
                 return null;
               },
             ),
-            // // todo: addable categories
-            // TextFormField(
-            //   controller: categories,
-            //   decoration: const InputDecoration(
-            //     hintText: '分類',
-            //   ),
-            //   validator: (String? value) {
-            //     if (value == null || value.isEmpty) {
-            //       return '請輸入分類';
-            //     }
-            //     return null;
-            //   },
-            // ),
-            SizedBox(
-              height: 400,
-              child: DynamicTextField(listController: _listController),
-            ),
             widget.restaurant != null
-                ? Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: SizedBox(
-                          width: 100,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              await _displayTextInputDialog(context);
-                              _confirmName.text = '';
-                            },
-                            child: const Text('刪除餐廳'),
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: SizedBox(
+                            width: 100,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                await _displayTextInputDialog(context);
+                                _confirmName.text = '';
+                              },
+                              child: const Text('刪除餐廳'),
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: SizedBox(
-                          width: 100,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: update,
-                            child: const Text('提交編輯'),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: SizedBox(
+                            width: 100,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: update,
+                              child: const Text('提交編輯'),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   )
                 : Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),

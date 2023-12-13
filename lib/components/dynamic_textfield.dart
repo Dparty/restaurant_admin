@@ -34,6 +34,7 @@ class _DynamicTextFieldState extends State<DynamicTextField> {
                   return Padding(
                     padding: const EdgeInsets.only(top: 5),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: Container(
@@ -55,25 +56,44 @@ class _DynamicTextFieldState extends State<DynamicTextField> {
                             ),
                           ),
                         ),
+
+                        // index != 0
+                        //     ?
+
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (index > 0) {
+                                var tmp = widget.listController![index];
+                                widget.listController!.removeAt(index);
+                                widget.listController!.insert(index - 1, tmp);
+                              }
+                            });
+                          },
+                          child: const Icon(
+                            Icons.swap_vert,
+                            color: kPrimaryColor,
+                            size: 30,
+                          ),
+                        ),
                         const SizedBox(
                           width: 10,
                         ),
-                        index != 0
-                            ? GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    widget.listController![index].clear();
-                                    widget.listController![index].dispose();
-                                    widget.listController!.removeAt(index);
-                                  });
-                                },
-                                child: const Icon(
-                                  Icons.delete,
-                                  color: kPrimaryColor,
-                                  size: 20,
-                                ),
-                              )
-                            : const SizedBox()
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              widget.listController![index].clear();
+                              widget.listController![index].dispose();
+                              widget.listController!.removeAt(index);
+                            });
+                          },
+                          child: const Icon(
+                            Icons.delete,
+                            color: kPrimaryColor,
+                            size: 30,
+                          ),
+                        )
+                        // : const SizedBox()
                       ],
                     ),
                   );

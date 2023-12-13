@@ -40,7 +40,7 @@ class NavBar extends StatelessWidget {
               DrawerItem(
                 name: '餐廳列表',
                 icon: Icons.list,
-                onPressed: () => onItemPressed(context, index: 4),
+                onPressed: () => onItemPressed(context, index: 5),
               ),
               const SizedBox(
                 height: 20,
@@ -93,6 +93,15 @@ class NavBar extends StatelessWidget {
                         const SizedBox(
                           height: 30,
                         ),
+                        DrawerItem(
+                            selected: selected == 4,
+                            name: '分類設置',
+                            icon: Icons.category,
+                            onPressed: () =>
+                                onItemPressed(context, index: 4, onTap: onTap)),
+                        const SizedBox(
+                          height: 30,
+                        ),
                         const Divider(
                           thickness: 1,
                           height: 10,
@@ -103,8 +112,8 @@ class NavBar extends StatelessWidget {
                         ),
                         DrawerItem(
                             name: '訂單管理',
-                            icon: Icons.print,
-                            onPressed: () => onItemPressed(context, index: 6)),
+                            icon: Icons.tab,
+                            onPressed: () => onItemPressed(context, index: 7)),
                         const SizedBox(
                           height: 30,
                         ),
@@ -122,7 +131,7 @@ class NavBar extends StatelessWidget {
               DrawerItem(
                   name: '登出',
                   icon: Icons.logout,
-                  onPressed: () => onItemPressed(context, index: 5)),
+                  onPressed: () => onItemPressed(context, index: 6)),
             ],
           ),
         ),
@@ -142,7 +151,7 @@ class NavBar extends StatelessWidget {
     context.read<SelectedItemProvider>().resetSelectItem();
 
     switch (index) {
-      case 6:
+      case 7:
         Navigator.pop(context);
         Navigator.push(
             context,
@@ -150,14 +159,14 @@ class NavBar extends StatelessWidget {
                 builder: (context) => OrderManagement(restaurant.id)));
 
         break;
-      case 4:
+      case 5:
         Navigator.pop(context);
         context.read<RestaurantProvider>().resetRestaurant();
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const RestaurantsPage()));
 
         break;
-      case 5:
+      case 6:
         Navigator.pop(context);
         (() {
           signout().then((_) {
