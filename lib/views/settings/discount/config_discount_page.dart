@@ -76,6 +76,8 @@ class _ConfigDiscountState extends State<ConfigDiscount> {
                             .setRestaurantDiscount(list.data);
                       })),
               onTap: setSelectedPrinter,
+              selected:
+                  context.watch<SelectedDiscountProvider>().selectedDiscount,
             ),
           )
         ],

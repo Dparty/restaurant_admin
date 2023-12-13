@@ -75,6 +75,8 @@ class _ConfigPrinterState extends State<ConfigPrinter> {
                             .setRestaurantPrinter(list.data);
                       })),
               onTap: setSelectedPrinter,
+              selected:
+                  context.watch<SelectedPrinterProvider>().selectedPrinter,
             ),
           )
         ],
@@ -86,6 +88,7 @@ class _ConfigPrinterState extends State<ConfigPrinter> {
                   .read<RestaurantProvider>()
                   .setRestaurantPrinter(list.data);
             })),
+
         automaticallyImplyLeading: false,
         // printer: context.watch<SelectedPrinterProvider>().selectedPrinter,
       ),

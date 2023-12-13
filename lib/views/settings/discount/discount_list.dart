@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_admin/components/dialog.dart';
 import 'package:restaurant_admin/api/restaurant.dart';
+import '../../../models/restaurant.dart';
 import 'discount_card.dart';
 
 class DiscountListView extends StatelessWidget {
   final List discountList;
   final Function()? reload;
   final Function? onTap;
+  final Discount? selected;
+
   const DiscountListView(
-      {Key? key, required this.discountList, this.reload, this.onTap})
+      {Key? key,
+      required this.discountList,
+      this.reload,
+      this.onTap,
+      this.selected})
       : super(key: key);
 
   @override
@@ -27,6 +34,7 @@ class DiscountListView extends StatelessWidget {
         ...discountList
             .map(
               (item) => DiscountCard(
+                selected: selected,
                 discount: item,
                 deleteDiscount: () => removeDiscount(item.id),
                 onTap: () => onTap!(item),

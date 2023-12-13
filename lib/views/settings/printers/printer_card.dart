@@ -8,22 +8,34 @@ class PrinterCard extends StatelessWidget {
     this.onTap,
     required this.printer,
     required this.deletePrinter,
+    this.selected,
   }) : super(key: key);
 
   final model.Printer printer;
+  final model.Printer? selected;
   final Function() deletePrinter;
   Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
+    const Map<String, String> printerTypeMap = {'BILL': '帳單', 'KITCHEN': '廚房'};
+
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10),
         child: GestureDetector(
           onTap: onTap,
           child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+            shape: selected?.id == printer.id
+                ? RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(
+                      color: const Color(0xFFCC8053).withOpacity(0.6),
+                      width: 1,
+                    ),
+                  )
+                : RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -43,7 +55,7 @@ class PrinterCard extends StatelessWidget {
                         const SizedBox(height: 10),
                         Text("SN編號：${printer.sn}"),
                         const SizedBox(height: 5),
-                        Text("打印機類型：${printer.type}"),
+                        Text("打印機類型：${printerTypeMap[printer.type]}"),
                         const SizedBox(height: 10),
                       ],
                     )),

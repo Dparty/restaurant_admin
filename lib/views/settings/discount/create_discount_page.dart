@@ -43,6 +43,7 @@ class _CreateDiscountPageState extends State<CreateDiscountPage> {
     discount = context.watch<SelectedDiscountProvider>().selectedDiscount;
     label = TextEditingController(text: discount?.label);
     offset = TextEditingController(text: discount?.offset.toString() ?? '0');
+    _currentSliderValue = discount?.offset ?? 0;
     super.didChangeDependencies();
   }
 
