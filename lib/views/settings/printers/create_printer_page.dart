@@ -24,6 +24,8 @@ class CreatePrinterPage extends StatefulWidget {
 }
 
 const List<String> printerTypeEnum = <String>[('BILL'), 'KITCHEN'];
+const Map<String, String> printerTypeMap = {'BILL': '帳單', 'KITCHEN': '廚房'};
+
 const List<String> printerModelEnum = <String>[('58mm'), '88mm'];
 
 class _CreatePrinterPageState extends State<CreatePrinterPage> {
@@ -146,7 +148,7 @@ class _CreatePrinterPageState extends State<CreatePrinterPage> {
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
-                            child: Text(value),
+                            child: Text(printerTypeMap[value] ?? ''),
                           );
                         }).toList(),
                       ),

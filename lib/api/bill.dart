@@ -9,13 +9,15 @@ Future<List<Bill>> listBills(String restaurantId,
   final token = await getToken();
   final query = {
     'restaurantId': restaurantId,
-    'status': status,
-    'tableId': tableId,
-    'startAt': startAt,
-    'endAt': endAt,
+    'status': status ?? '',
+    'tableId': tableId ?? '',
+    'startAt': startAt ?? '',
+    'endAt': endAt ?? '',
   };
+  print(query);
   final response = await http.get(
-      Uri.https(restaurantApiDomain, "/bills", query),
+      Uri.https(restaurantApiDomain, "/bills",
+          query.map((key, value) => MapEntry(key, value.toString()))),
       headers: {'Authorization': "bearer $token"});
   if (response.statusCode == 200) {
     return (jsonDecode(response.body) as Iterable)

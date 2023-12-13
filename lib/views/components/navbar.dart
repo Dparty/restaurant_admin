@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_admin/provider/selected_discount_provider.dart';
 import 'package:restaurant_admin/views/restaurant_settings_page.dart';
+import '../settings/order_management.dart';
 import 'navbar_item.dart';
 import '../../main.dart';
 import '../../api/utils.dart';
@@ -84,21 +86,21 @@ class NavBar extends StatelessWidget {
                         const SizedBox(
                           height: 30,
                         ),
-                        // const Divider(
-                        //   thickness: 1,
-                        //   height: 10,
-                        //   color: Colors.grey,
-                        // ),
-                        // const SizedBox(
-                        //   height: 30,
-                        // ),
-                        // DrawerItem(
-                        //     name: '訂單管理',
-                        //     icon: Icons.print,
-                        //     onPressed: () => onItemPressed(context, index: 6)),
-                        // const SizedBox(
-                        //   height: 30,
-                        // ),
+                        const Divider(
+                          thickness: 1,
+                          height: 10,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        DrawerItem(
+                            name: '訂單管理',
+                            icon: Icons.print,
+                            onPressed: () => onItemPressed(context, index: 6)),
+                        const SizedBox(
+                          height: 30,
+                        ),
                         const Divider(
                           thickness: 1,
                           height: 10,
@@ -129,17 +131,18 @@ class NavBar extends StatelessWidget {
     }
     context.read<SelectedTableProvider>().resetSelectTable();
     context.read<SelectedPrinterProvider>().resetSelectPrinter();
+    context.read<SelectedDiscountProvider>().resetSelectDiscount();
     context.read<SelectedItemProvider>().resetSelectItem();
 
     switch (index) {
-      // case 6:
-      //   Navigator.pop(context);
-      //   Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //           builder: (context) => OrderManagement(restaurant.id)));
-      //
-      //   break;
+      case 6:
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => OrderManagement(restaurant.id)));
+
+        break;
       case 4:
         Navigator.pop(context);
         context.read<RestaurantProvider>().resetRestaurant();

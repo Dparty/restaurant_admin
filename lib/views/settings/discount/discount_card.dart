@@ -7,10 +7,12 @@ class DiscountCard extends StatelessWidget {
     Key? key,
     this.onTap,
     required this.discount,
+    this.selected,
     required this.deleteDiscount,
   }) : super(key: key);
 
   final model.Discount discount;
+  final model.Discount? selected;
   final Function() deleteDiscount;
   Function()? onTap;
 
@@ -21,9 +23,17 @@ class DiscountCard extends StatelessWidget {
         child: GestureDetector(
           onTap: onTap,
           child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+            shape: selected?.id == discount.id
+                ? RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(
+                      color: const Color(0xFFCC8053).withOpacity(0.6),
+                      width: 1,
+                    ),
+                  )
+                : RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

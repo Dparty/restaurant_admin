@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_admin/components/dialog.dart';
 import 'package:restaurant_admin/api/restaurant.dart';
+import '../../../models/restaurant.dart';
 import 'printer_card.dart';
 
 class PrintersListView extends StatelessWidget {
   final List printersList;
   final Function()? reload;
   final Function? onTap;
+  final Printer? selected;
   const PrintersListView(
-      {Key? key, required this.printersList, this.reload, this.onTap})
+      {Key? key,
+      required this.printersList,
+      this.reload,
+      this.onTap,
+      this.selected})
       : super(key: key);
 
   @override
@@ -27,6 +33,7 @@ class PrintersListView extends StatelessWidget {
         ...printersList
             .map(
               (item) => PrinterCard(
+                selected: selected,
                 printer: item,
                 deletePrinter: () => removePrinter(item.id),
                 onTap: () => onTap!(item),
