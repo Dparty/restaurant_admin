@@ -107,6 +107,7 @@ class _RestaurantSettingsPageState extends State<RestaurantSettingsPage>
         child: NavBar(
           onTap: _onNavTapped,
           showSettings: true,
+          selected: _selectedNavIndex,
         ),
       ),
       centerTitle: ["品項設置", "餐桌設置", "打印機設置", "折扣設置"][_selectedNavIndex],

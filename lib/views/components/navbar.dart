@@ -15,12 +15,14 @@ import 'package:restaurant_admin/provider/selected_printer_provider.dart';
 import 'package:restaurant_admin/provider/selected_item_provider.dart';
 
 class NavBar extends StatelessWidget {
-  NavBar({Key? key, this.navIndex, this.onTap, this.showSettings})
+  NavBar(
+      {Key? key, this.navIndex, this.onTap, this.showSettings, this.selected})
       : super(key: key);
 
   final int? navIndex;
   bool? showSettings = true;
   final Function? onTap;
+  int? selected = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -55,14 +57,17 @@ class NavBar extends StatelessWidget {
                   ? Column(
                       children: [
                         DrawerItem(
+                            selected: selected == 0,
                             name: '品項設置',
                             icon: Icons.settings,
-                            onPressed: () =>
-                                onItemPressed(context, index: 0, onTap: onTap)),
+                            onPressed: () {
+                              onItemPressed(context, index: 0, onTap: onTap);
+                            }),
                         const SizedBox(
                           height: 30,
                         ),
                         DrawerItem(
+                            selected: selected == 1,
                             name: '餐桌設置',
                             icon: Icons.restaurant,
                             onPressed: () =>
@@ -71,6 +76,7 @@ class NavBar extends StatelessWidget {
                           height: 30,
                         ),
                         DrawerItem(
+                            selected: selected == 2,
                             name: '打印機設置',
                             icon: Icons.print,
                             onPressed: () =>
@@ -79,6 +85,7 @@ class NavBar extends StatelessWidget {
                           height: 30,
                         ),
                         DrawerItem(
+                            selected: selected == 3,
                             name: '折扣設置',
                             icon: Icons.discount,
                             onPressed: () =>
