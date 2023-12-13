@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_admin/components/dialog.dart';
 import 'package:restaurant_admin/views/components/default_layout.dart';
+import 'package:restaurant_admin/views/settings/config_category.dart';
 import 'package:restaurant_admin/views/settings/tables/config_table_page.dart';
 import 'package:restaurant_admin/views/settings/printers/config_printer_page.dart';
 import 'package:restaurant_admin/views/settings/discount/config_discount_page.dart';
@@ -110,12 +111,13 @@ class _RestaurantSettingsPageState extends State<RestaurantSettingsPage>
           selected: _selectedNavIndex,
         ),
       ),
-      centerTitle: ["品項設置", "餐桌設置", "打印機設置", "折扣設置"][_selectedNavIndex],
+      centerTitle: ["品項設置", "餐桌設置", "打印機設置", "折扣設置", "分類設置"][_selectedNavIndex],
       center: [
         ConfigItem(),
         ConfigTablePage(restaurantId),
         const ConfigPrinter(),
         ConfigDiscount(restaurantId),
+        const ConfigCategory(),
       ][_selectedNavIndex],
     );
   }

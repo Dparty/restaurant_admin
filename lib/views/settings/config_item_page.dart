@@ -56,7 +56,6 @@ class _ConfigItemState extends State<ConfigItem> with TickerProviderStateMixin {
     //
     // print(restaurant.itemsMap.keys.length);
     // print(widget.lastIndex);
-    print(_tabController!.index);
     _tabController?.addListener(() {
       setState(() {
         widget.lastIndex = _tabController!.index;
