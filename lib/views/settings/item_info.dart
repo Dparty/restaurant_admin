@@ -67,6 +67,12 @@ class _EditItemPageState extends State<EditItemPage> {
     });
   }
 
+  void _deletePrinterAt(int index) {
+    setState(() {
+      _selectedPrinters?.removeAt(index);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -224,6 +230,7 @@ class _EditItemPageState extends State<EditItemPage> {
                   index: i,
                   selectedPrinters: _selectedPrinters,
                   onSelect: setSelectPrinter,
+                  onDelete: _deletePrinterAt,
                 ))
         : List.generate(
             item!.printers.length,
@@ -231,6 +238,7 @@ class _EditItemPageState extends State<EditItemPage> {
                   index: i,
                   selectedPrinters: _selectedPrinters,
                   onSelect: setSelectPrinter,
+                  onDelete: _deletePrinterAt,
                 ));
 
     return Scaffold(
@@ -469,17 +477,17 @@ class _EditItemPageState extends State<EditItemPage> {
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: Column(children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 const Text('打印機：'),
                                 ElevatedButton(
                                   onPressed: _addNewPrinter,
-                                  child: const Icon(Icons.add),
+                                  child: const Text("添加"),
                                 ),
-                                ElevatedButton(
-                                  onPressed: _deletePrinter,
-                                  child: const Icon(Icons.remove),
-                                ),
+                                // ElevatedButton(
+                                //   onPressed: _deletePrinter,
+                                //   child: const Icon(Icons.remove),
+                                // ),
                               ],
                             ),
                             SizedBox(
