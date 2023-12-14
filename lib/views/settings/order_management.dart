@@ -92,13 +92,7 @@ class _OrderManagementState extends State<OrderManagement> {
   Widget build(BuildContext context) {
     final restaurant = context.watch<RestaurantProvider>();
     final tableProvider = context.watch<SelectedTableProvider>();
-
     List<Bill>? orders = tableProvider.tableOrders;
-    final List<String?> labelList = orders == null
-        ? []
-        : {...orders!.map((e) => e.tableLabel).toList()}.toList();
-
-    final DataTableSource _data = BillData(orders!, showBill);
     filterData = orders;
 
     return MainLayout(
@@ -275,6 +269,32 @@ class _OrderManagementState extends State<OrderManagement> {
                         ]),
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    width: 200,
+                    height: 40,
+                    child: SearchBar(
+                      leading: const Icon(Icons.search),
+                      onChanged: (e) {
+                        setState(() {
+                          // filterData!.sort((a, b) => b.id!.compareTo(a.id!));
+                          // filterData = List.from(orders!);
+                          //     .toList();
+                          filterData = filterData
+                              ?.where((element) => element.id.contains(e))
+                              .toList();
+                          // print(filterData?.length);
+                          // context
+                          //     .read<SelectedTableProvider>()
+                          //     .setAllTableOrders(filterData!
+                          //         .where((element) => element.id.contains(e))
+                          //         .toList());
+                          // print(orders?.length);
+                          // filterData = tmp;
+                        });
+                      },
+                      // other arguments
+                    ),
                   )
                 ],
               ),
@@ -289,7 +309,7 @@ class _OrderManagementState extends State<OrderManagement> {
                 //     setState(() => _rowsPerPage = value!),
                 sortColumnIndex: 0,
                 sortAscending: sort,
-                source: _data,
+                source: BillData(filterData!, showBill),
                 header: const Text('訂單列表'),
                 columns: [
                   DataColumn(

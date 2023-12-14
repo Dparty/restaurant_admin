@@ -14,6 +14,8 @@ import 'package:restaurant_admin/provider/selected_table_provider.dart';
 import 'package:restaurant_admin/provider/selected_printer_provider.dart';
 import 'package:restaurant_admin/provider/selected_item_provider.dart';
 
+enum Config { Item, Table, Printer, Discount, Category }
+
 class NavBar extends StatelessWidget {
   NavBar(
       {Key? key, this.navIndex, this.onTap, this.showSettings, this.selected})
@@ -57,7 +59,7 @@ class NavBar extends StatelessWidget {
                   ? Column(
                       children: [
                         DrawerItem(
-                            selected: selected == 0,
+                            selected: selected == Config.Item,
                             name: '品項設置',
                             icon: Icons.settings,
                             onPressed: () {
@@ -67,7 +69,7 @@ class NavBar extends StatelessWidget {
                           height: 30,
                         ),
                         DrawerItem(
-                            selected: selected == 1,
+                            selected: selected == Config.Table,
                             name: '餐桌設置',
                             icon: Icons.restaurant,
                             onPressed: () =>
@@ -76,7 +78,7 @@ class NavBar extends StatelessWidget {
                           height: 30,
                         ),
                         DrawerItem(
-                            selected: selected == 2,
+                            selected: selected == Config.Printer,
                             name: '打印機設置',
                             icon: Icons.print,
                             onPressed: () =>
@@ -85,7 +87,7 @@ class NavBar extends StatelessWidget {
                           height: 30,
                         ),
                         DrawerItem(
-                            selected: selected == 3,
+                            selected: selected == Config.Discount,
                             name: '折扣設置',
                             icon: Icons.discount,
                             onPressed: () =>
@@ -94,7 +96,7 @@ class NavBar extends StatelessWidget {
                           height: 30,
                         ),
                         DrawerItem(
-                            selected: selected == 4,
+                            selected: selected == Config.Category,
                             name: '分類設置',
                             icon: Icons.category,
                             onPressed: () =>

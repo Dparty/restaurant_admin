@@ -77,7 +77,7 @@ class _ConfigTablePageState extends State<ConfigTablePage> {
               )
             ],
           ),
-          restaurantId != '1716465010659561472'
+          restaurantId != '1717358125507416064'
               ? SizedBox(
                   height: MediaQuery.of(context).size.height - 200,
                   child: SingleChildScrollView(
