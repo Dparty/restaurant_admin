@@ -59,7 +59,7 @@ class NavBar extends StatelessWidget {
                   ? Column(
                       children: [
                         DrawerItem(
-                            selected: selected == Config.Item,
+                            selected: selected == Config.Item.index,
                             name: '品項設置',
                             icon: Icons.settings,
                             onPressed: () {
@@ -69,7 +69,7 @@ class NavBar extends StatelessWidget {
                           height: 30,
                         ),
                         DrawerItem(
-                            selected: selected == Config.Table,
+                            selected: selected == Config.Table.index,
                             name: '餐桌設置',
                             icon: Icons.restaurant,
                             onPressed: () =>
@@ -78,7 +78,7 @@ class NavBar extends StatelessWidget {
                           height: 30,
                         ),
                         DrawerItem(
-                            selected: selected == Config.Printer,
+                            selected: selected == Config.Printer.index,
                             name: '打印機設置',
                             icon: Icons.print,
                             onPressed: () =>
@@ -87,7 +87,7 @@ class NavBar extends StatelessWidget {
                           height: 30,
                         ),
                         DrawerItem(
-                            selected: selected == Config.Discount,
+                            selected: selected == Config.Discount.index,
                             name: '折扣設置',
                             icon: Icons.discount,
                             onPressed: () =>
@@ -96,7 +96,7 @@ class NavBar extends StatelessWidget {
                           height: 30,
                         ),
                         DrawerItem(
-                            selected: selected == Config.Category,
+                            selected: selected == Config.Category.index,
                             name: '分類設置',
                             icon: Icons.category,
                             onPressed: () =>
@@ -154,7 +154,6 @@ class NavBar extends StatelessWidget {
 
     switch (index) {
       case 7:
-        Navigator.pop(context);
         Navigator.push(
             context,
             MaterialPageRoute(
