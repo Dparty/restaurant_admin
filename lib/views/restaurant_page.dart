@@ -3,7 +3,7 @@ import 'package:restaurant_admin/configs/constants.dart';
 import 'package:restaurant_admin/main.dart';
 import 'package:restaurant_admin/models/restaurant.dart';
 import 'package:restaurant_admin/views/restaurant_settings_page.dart';
-import 'package:restaurant_admin/views/create_restaurant_page.dart';
+import 'package:restaurant_admin/views/settings/create_restaurant_page.dart';
 
 import '../api/restaurant.dart';
 import '../api/utils.dart';
@@ -19,8 +19,8 @@ class _RestaurantState extends State<RestaurantsPage> {
   late List<Restaurant> restaurants;
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
+  var restaurantList;
 
-  RestaurantList restaurantList = const RestaurantList(data: []);
   @override
   void initState() {
     super.initState();
@@ -37,65 +37,71 @@ class _RestaurantState extends State<RestaurantsPage> {
 
   createRestaurant() async {
     await Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return const CreateRestaurantPage();
+      return CreateRestaurantPage();
     }));
     loadData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: const Text('餐廳列表'),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  signout().then((_) {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()));
-                  });
-                },
-                icon: const Icon(Icons.logout))
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-            backgroundColor: kPrimaryColor,
-            onPressed: createRestaurant,
-            child: const Icon(Icons.add)),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 20.0, left: 40),
-          child: Wrap(
-            spacing: 20.0,
-            runSpacing: 4.0,
-            children: [
-              ...restaurantList.data.map((e) => SizedBox(
-                    width: 300,
-                    height: 340,
-                    child: RestaurantCard(
-                      restaurant: e,
-                      key: Key(e.id),
-                      reload: loadData,
-                    ),
-                  ))
-            ],
-          ),
-        )
-        // gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        //     maxCrossAxisExtent: 700,
-        //     childAspectRatio: 3 / 2,
-        //     crossAxisSpacing: 20,
-        //     mainAxisSpacing: 10),
-        // itemCount: restaurantList.data.length,
-        // itemBuilder: (context, index) => RestaurantCard(
-        //       restaurant: restaurantList.data[index],
-        //       key: Key(restaurantList.data[index].id),
-        //       reload: loadData,
-        //     ))
+    return restaurantList == null
+        ? const SizedBox(
+            height: 300.0,
+            width: 300.0,
+            child: Center(child: CircularProgressIndicator()),
+          )
+        : Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              title: const Text('餐廳列表'),
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      signout().then((_) {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const HomePage()));
+                      });
+                    },
+                    icon: const Icon(Icons.logout))
+              ],
+            ),
+            floatingActionButton: FloatingActionButton(
+                backgroundColor: kPrimaryColor,
+                onPressed: createRestaurant,
+                child: const Icon(Icons.add)),
+            body: Padding(
+              padding: const EdgeInsets.only(top: 20.0, left: 40),
+              child: Wrap(
+                spacing: 20.0,
+                runSpacing: 4.0,
+                children: [
+                  ...restaurantList.data.map((e) => SizedBox(
+                        width: 300,
+                        height: 300,
+                        child: RestaurantCard(
+                          restaurant: e,
+                          key: Key(e.id),
+                          reload: loadData,
+                        ),
+                      ))
+                ],
+              ),
+            )
+            // gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            //     maxCrossAxisExtent: 700,
+            //     childAspectRatio: 3 / 2,
+            //     crossAxisSpacing: 20,
+            //     mainAxisSpacing: 10),
+            // itemCount: restaurantList.data.length,
+            // itemBuilder: (context, index) => RestaurantCard(
+            //       restaurant: restaurantList.data[index],
+            //       key: Key(restaurantList.data[index].id),
+            //       reload: loadData,
+            //     ))
 
-        );
+            );
   }
 }
 
@@ -114,6 +120,7 @@ class RestaurantCard extends StatelessWidget {
             MaterialPageRoute(
                 builder: (context) => RestaurantSettingsPage(
                       restaurantId: restaurant.id,
+                      reload: reload,
                     )));
       },
       child: Card(
@@ -123,7 +130,7 @@ class RestaurantCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -135,9 +142,9 @@ class RestaurantCard extends StatelessWidget {
                 fit: BoxFit.contain,
               ),
               Container(
-                padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Column(
@@ -151,41 +158,44 @@ class RestaurantCard extends StatelessWidget {
                             color: Colors.grey[800],
                           ),
                         ),
-                        Text(
-                          restaurant.description,
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.grey[700],
-                          ),
-                        ),
+                        restaurant.description != ''
+                            ? Text(
+                                restaurant.description.length > 6
+                                    ? '${restaurant.description.substring(0, 6)}...'
+                                    : restaurant.description,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey[700],
+                                ))
+                            : const SizedBox.shrink(),
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        IconButton(
-                            onPressed: () async {
-                              await Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return CreateRestaurantPage(
-                                    restaurant: restaurant);
-                              }));
-                              reload!();
-                            },
-                            icon: const Icon(Icons.info_outline)),
-                        IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          RestaurantSettingsPage(
-                                            restaurantId: restaurant.id,
-                                          )));
-                            },
-                            icon: const Icon(Icons.settings))
-                      ],
-                    ),
+                    IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RestaurantSettingsPage(
+                                        restaurantId: restaurant.id,
+                                      )));
+                        },
+                        icon: const Icon(Icons.settings))
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.end,
+                    //   children: <Widget>[
+                    //     IconButton(
+                    //         onPressed: () async {
+                    //           await Navigator.push(context,
+                    //               MaterialPageRoute(builder: (context) {
+                    //             return CreateRestaurantPage(
+                    //                 restaurant: restaurant);
+                    //           }));
+                    //           reload!();
+                    //         },
+                    //         icon: const Icon(Icons.info_outline)),
+
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
@@ -195,30 +205,5 @@ class RestaurantCard extends StatelessWidget {
         ),
       ),
     );
-    // return Padding(
-    //   padding: const EdgeInsets.all(16.0),
-    //   child: Row(children: [
-    //     Expanded(child: Text(restaurant.name)),
-    //     IconButton(
-    //         onPressed: () async {
-    //           await Navigator.push(context,
-    //               MaterialPageRoute(builder: (context) {
-    //             return CreateRestaurantPage(restaurant: restaurant);
-    //           }));
-    //           reload!();
-    //         },
-    //         icon: const Icon(Icons.info_outline)),
-    //     IconButton(
-    //         onPressed: () {
-    //           Navigator.push(
-    //               context,
-    //               MaterialPageRoute(
-    //                   builder: (context) => RestaurantSettingsPage(
-    //                         restaurantId: restaurant.id,
-    //                       )));
-    //         },
-    //         icon: const Icon(Icons.settings))
-    //   ]),
-    // );
   }
 }
