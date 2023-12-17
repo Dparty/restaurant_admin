@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:restaurant_admin/api/restaurant.dart';
 import 'package:restaurant_admin/components/dialog.dart';
-import 'package:restaurant_admin/components/dynamic_textfield.dart';
 import 'package:restaurant_admin/configs/constants.dart';
 import 'package:restaurant_admin/models/restaurant.dart';
 
-class CreateRestaurantPage extends StatefulWidget {
-  final Restaurant? restaurant;
+import '../../provider/restaurant_provider.dart';
+import '../../provider/selected_item_provider.dart';
+import '../restaurant_page.dart';
 
-  const CreateRestaurantPage({super.key, this.restaurant});
+class CreateRestaurantPage extends StatefulWidget {
+  Restaurant? restaurant;
+  Function? reload;
+
+  CreateRestaurantPage({super.key, this.restaurant, this.reload});
 
   @override
   State<StatefulWidget> createState() => _CreateRestaurantPageState();
@@ -101,14 +106,27 @@ class _CreateRestaurantPageState extends State<CreateRestaurantPage> {
 
     updateRestaurant(
             widget.restaurant!.id, name!.text, description!.text, categoryList)
-        .then((value) => Navigator.pop(context));
+        .then((value) {
+      showAlertDialog(context, "編輯成功", onConfirmed: () async {
+        Navigator.pop(context);
+        context.read<RestaurantProvider>().resetRestaurant();
+        widget.reload!();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const RestaurantsPage()));
+      });
+    });
   }
 
   delete() {
     deleteRestaurant(widget.restaurant!.id).then((value) {
       Navigator.pop(context);
-      showAlertDialog(context, "刪除成功",
-          onConfirmed: () => Navigator.pop(context));
+      showAlertDialog(context, "刪除成功", onConfirmed: () {
+        Navigator.pop(context);
+        context.read<RestaurantProvider>().resetRestaurant();
+        widget.reload!();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const RestaurantsPage()));
+      });
     });
   }
 
@@ -121,9 +139,14 @@ class _CreateRestaurantPageState extends State<CreateRestaurantPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('創建餐廳'),
-      ),
+      appBar: widget.restaurant != null
+          ? AppBar(
+              title: const Text('編輯餐廳'),
+              automaticallyImplyLeading: false,
+            )
+          : AppBar(
+              title: const Text('創建餐廳'),
+            ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(

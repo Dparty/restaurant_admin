@@ -14,7 +14,7 @@ import 'package:restaurant_admin/provider/selected_table_provider.dart';
 import 'package:restaurant_admin/provider/selected_printer_provider.dart';
 import 'package:restaurant_admin/provider/selected_item_provider.dart';
 
-enum Config { Item, Table, Printer, Discount, Category }
+enum Config { Item, Table, Printer, Discount, Category, Restaurant }
 
 class NavBar extends StatelessWidget {
   NavBar(
@@ -37,12 +37,12 @@ class NavBar extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(
-                height: 40,
+                height: 30,
               ),
               DrawerItem(
                 name: '餐廳列表',
                 icon: Icons.list,
-                onPressed: () => onItemPressed(context, index: 5),
+                onPressed: () => onItemPressed(context, index: 6),
               ),
               const SizedBox(
                 height: 20,
@@ -53,7 +53,7 @@ class NavBar extends StatelessWidget {
                 color: Colors.grey,
               ),
               const SizedBox(
-                height: 30,
+                height: 20,
               ),
               showSettings == true
                   ? Column(
@@ -63,46 +63,56 @@ class NavBar extends StatelessWidget {
                             name: '品項設置',
                             icon: Icons.settings,
                             onPressed: () {
-                              onItemPressed(context, index: 0, onTap: onTap);
+                              onItemPressed(context,
+                                  index: Config.Item.index, onTap: onTap);
                             }),
                         const SizedBox(
-                          height: 30,
+                          height: 20,
                         ),
                         DrawerItem(
                             selected: selected == Config.Table.index,
                             name: '餐桌設置',
                             icon: Icons.restaurant,
-                            onPressed: () =>
-                                onItemPressed(context, index: 1, onTap: onTap)),
+                            onPressed: () => onItemPressed(context,
+                                index: Config.Table.index, onTap: onTap)),
                         const SizedBox(
-                          height: 30,
+                          height: 20,
                         ),
                         DrawerItem(
                             selected: selected == Config.Printer.index,
                             name: '打印機設置',
                             icon: Icons.print,
-                            onPressed: () =>
-                                onItemPressed(context, index: 2, onTap: onTap)),
+                            onPressed: () => onItemPressed(context,
+                                index: Config.Printer.index, onTap: onTap)),
                         const SizedBox(
-                          height: 30,
+                          height: 20,
                         ),
                         DrawerItem(
                             selected: selected == Config.Discount.index,
                             name: '折扣設置',
                             icon: Icons.discount,
-                            onPressed: () =>
-                                onItemPressed(context, index: 3, onTap: onTap)),
+                            onPressed: () => onItemPressed(context,
+                                index: Config.Discount.index, onTap: onTap)),
                         const SizedBox(
-                          height: 30,
+                          height: 20,
                         ),
                         DrawerItem(
                             selected: selected == Config.Category.index,
                             name: '分類設置',
                             icon: Icons.category,
-                            onPressed: () =>
-                                onItemPressed(context, index: 4, onTap: onTap)),
+                            onPressed: () => onItemPressed(context,
+                                index: Config.Category.index, onTap: onTap)),
                         const SizedBox(
-                          height: 30,
+                          height: 20,
+                        ),
+                        DrawerItem(
+                            selected: selected == Config.Restaurant.index,
+                            name: '餐廳設置',
+                            icon: Icons.category,
+                            onPressed: () => onItemPressed(context,
+                                index: Config.Restaurant.index, onTap: onTap)),
+                        const SizedBox(
+                          height: 20,
                         ),
                         const Divider(
                           thickness: 1,
@@ -110,14 +120,14 @@ class NavBar extends StatelessWidget {
                           color: Colors.grey,
                         ),
                         const SizedBox(
-                          height: 30,
+                          height: 20,
                         ),
                         DrawerItem(
                             name: '訂單管理',
                             icon: Icons.tab,
-                            onPressed: () => onItemPressed(context, index: 7)),
+                            onPressed: () => onItemPressed(context, index: 8)),
                         const SizedBox(
-                          height: 30,
+                          height: 20,
                         ),
                         const Divider(
                           thickness: 1,
@@ -125,7 +135,7 @@ class NavBar extends StatelessWidget {
                           color: Colors.grey,
                         ),
                         const SizedBox(
-                          height: 30,
+                          height: 20,
                         ),
                       ],
                     )
@@ -133,7 +143,7 @@ class NavBar extends StatelessWidget {
               DrawerItem(
                   name: '登出',
                   icon: Icons.logout,
-                  onPressed: () => onItemPressed(context, index: 6)),
+                  onPressed: () => onItemPressed(context, index: 7)),
             ],
           ),
         ),
@@ -153,21 +163,23 @@ class NavBar extends StatelessWidget {
     context.read<SelectedItemProvider>().resetSelectItem();
 
     switch (index) {
-      case 7:
+      case 8:
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => OrderManagement(restaurant.id)));
 
         break;
-      case 5:
+      case 6:
         Navigator.pop(context);
         context.read<RestaurantProvider>().resetRestaurant();
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const RestaurantsPage()));
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const RestaurantsPage()),
+            (route) => false);
 
         break;
-      case 6:
+      case 7:
         Navigator.pop(context);
         (() {
           signout().then((_) {

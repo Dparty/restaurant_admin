@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_admin/components/dialog.dart';
+import 'package:restaurant_admin/configs/constants.dart';
 import 'package:restaurant_admin/views/restaurant_page.dart';
 import "package:shared_preferences/shared_preferences.dart";
 import 'package:restaurant_admin/api/account.dart';
@@ -72,7 +73,7 @@ class _SigninFormState extends State<SigninForm> {
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: kPrimaryColor,
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
