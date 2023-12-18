@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_admin/components/dialog.dart';
 
+import '../../configs/constants.dart';
 import '../../models/restaurant.dart';
 
 class AddAttributePage extends StatefulWidget {
@@ -72,72 +73,101 @@ class _AddAttributePageState extends State<AddAttributePage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(title: const Text('增加屬性')),
-      body: Column(
-        children: [
-          Expanded(
-              child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: ListView(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      hintText: '輸入屬名',
-                    ),
-                    controller: label,
-                  ),
-                ),
-                ...options
-                    .map(
-                      (o) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Row(children: [
-                          Expanded(
-                              child: TextField(
-                            decoration: const InputDecoration(
-                              hintText: '選項標籤',
-                            ),
-                            controller: o.label,
-                          )),
-                          Expanded(
-                            child: TextField(
-                              decoration: const InputDecoration(
-                                hintText: '額外價錢',
-                              ),
-                              keyboardType: TextInputType.number,
-                              controller: o.pricing,
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () => deleteOption(options.indexOf(o)),
-                            child: const Text('刪除'),
-                          )
-                        ]),
+  Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height - 200;
+    var width = MediaQuery.of(context).size.width - 800;
+    return AlertDialog(
+      title: const Text('新增屬性'),
+      content: SizedBox(
+          width: width,
+          height: height,
+          child: Column(
+            children: [
+              Expanded(
+                  child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ListView(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          hintText: '輸入屬名',
+                        ),
+                        controller: label,
                       ),
-                    )
-                    .toList(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: ElevatedButton(
-                    onPressed: addOption,
-                    child: const Text('增加選項'),
-                  ),
+                    ),
+                    ...options
+                        .map(
+                          (o) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: Row(children: [
+                              Expanded(
+                                  child: TextField(
+                                decoration: const InputDecoration(
+                                  hintText: '選項標籤',
+                                ),
+                                controller: o.label,
+                              )),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Expanded(
+                                child: TextField(
+                                  decoration: const InputDecoration(
+                                    hintText: '額外價錢',
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  controller: o.pricing,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 30,
+                              ),
+                              ElevatedButton(
+                                onPressed: () =>
+                                    deleteOption(options.indexOf(o)),
+                                child: const Text('刪除'),
+                              )
+                            ]),
+                          ),
+                        )
+                        .toList(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: kPrimaryColor, // Background color
+                        ),
+                        onPressed: addOption,
+                        child: const Text('增加選項'),
+                      ),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: ElevatedButton(
-                    onPressed: submit,
-                    child: const Text('完成'),
-                  ),
-                ),
-              ],
-            ),
+              )),
+            ],
           )),
-        ],
-      ));
+      actions: <Widget>[
+        MaterialButton(
+          textColor: kPrimaryColor,
+          child: const Text('取消'),
+          onPressed: () {
+            setState(() {
+              // _confirmName.text = "";
+              Navigator.pop(context);
+            });
+          },
+        ),
+        MaterialButton(
+          color: kPrimaryColor,
+          textColor: Colors.white,
+          onPressed: submit,
+          child: const Text('確認'),
+        ),
+      ],
+    );
+  }
 }
 
 class OptionEditList {

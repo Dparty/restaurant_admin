@@ -12,6 +12,7 @@ import 'package:restaurant_admin/models/restaurant.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_admin/provider/restaurant_provider.dart';
 import 'package:restaurant_admin/provider/selected_item_provider.dart';
+import '../../configs/constants.dart';
 import './printer_row.dart';
 
 class EditItemPage extends StatefulWidget {
@@ -182,13 +183,12 @@ class _EditItemPageState extends State<EditItemPage> {
     update();
   }
 
-  void addAttribute() async {
-    final Attribute? attribute = await Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const AddAttributePage()))
-        as Attribute?;
-    setState(() {
-      if (attribute != null) attributes?.add(attribute);
-    });
+  Future<dynamic> _displayAddAttribute(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return const AddAttributePage();
+        });
   }
 
   void _pickFiles() async {
@@ -463,7 +463,14 @@ class _EditItemPageState extends State<EditItemPage> {
                             Icons.add_circle,
                             color: Colors.white,
                           ),
-                          onPressed: addAttribute,
+                          // onPressed: addAttribute,
+                          onPressed: () async {
+                            final Attribute? attribute =
+                                await _displayAddAttribute(context);
+                            setState(() {
+                              if (attribute != null) attributes?.add(attribute);
+                            });
+                          },
                           label: const Text(
                             "增加屬性",
                             style: TextStyle(fontSize: 16, color: Colors.white),
