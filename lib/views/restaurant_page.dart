@@ -177,6 +177,7 @@ class RestaurantCard extends StatelessWidget {
                               MaterialPageRoute(
                                   builder: (context) => RestaurantSettingsPage(
                                         restaurantId: restaurant.id,
+                                        reload: reload,
                                       )));
                         },
                         icon: const Icon(Icons.settings))
