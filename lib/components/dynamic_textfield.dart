@@ -56,10 +56,6 @@ class _DynamicTextFieldState extends State<DynamicTextField> {
                             ),
                           ),
                         ),
-
-                        // index != 0
-                        //     ?
-
                         GestureDetector(
                           onTap: () {
                             setState(() {
@@ -71,7 +67,7 @@ class _DynamicTextFieldState extends State<DynamicTextField> {
                             });
                           },
                           child: const Icon(
-                            Icons.swap_vert,
+                            Icons.arrow_upward,
                             color: kPrimaryColor,
                             size: 30,
                           ),

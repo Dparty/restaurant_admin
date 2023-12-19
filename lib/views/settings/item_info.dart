@@ -439,7 +439,8 @@ class _EditItemPageState extends State<EditItemPage> {
                                           children: [
                                             Text(
                                               a.label,
-                                              style: TextStyle(fontSize: 18),
+                                              style:
+                                                  const TextStyle(fontSize: 18),
                                             ),
                                             Row(
                                               mainAxisAlignment:
@@ -483,7 +484,7 @@ class _EditItemPageState extends State<EditItemPage> {
                                         });
                                       },
                                       child: const Icon(
-                                        Icons.swap_vert,
+                                        Icons.arrow_upward,
                                         color: kPrimaryColor,
                                         size: 30,
                                       ),
