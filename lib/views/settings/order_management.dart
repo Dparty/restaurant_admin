@@ -479,7 +479,7 @@ class _OrderManagementState extends State<OrderManagement> {
                             ),
                           ),
                           SizedBox(
-                            child: Text("所有訂單總額：\$${total / 1000}"),
+                            child: Text("所有訂單總額：\$${total / 100}"),
                           )
                           // SizedBox(
                           //   width: 200,
