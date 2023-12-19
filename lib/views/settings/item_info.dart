@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:restaurant_admin/provider/restaurant_provider.dart';
 import 'package:restaurant_admin/provider/selected_item_provider.dart';
 import '../../configs/constants.dart';
+import 'package:collection/collection.dart';
 import './printer_row.dart';
 
 class EditItemPage extends StatefulWidget {
@@ -183,11 +184,11 @@ class _EditItemPageState extends State<EditItemPage> {
     update();
   }
 
-  Future<dynamic> _displayAddAttribute(BuildContext context) async {
+  Future<dynamic> _displayAddAttribute(BuildContext context, attribute) async {
     return showDialog(
         context: context,
         builder: (context) {
-          return const AddAttributePage();
+          return AddAttributePage(attribute: attribute);
         });
   }
 
@@ -311,7 +312,6 @@ class _EditItemPageState extends State<EditItemPage> {
                           return null;
                         },
                       ),
-
                       TextFormField(
                         controller: tag,
                         focusNode: _focusNode,
@@ -362,48 +362,6 @@ class _EditItemPageState extends State<EditItemPage> {
                           );
                         },
                       ),
-                      // RawAutocomplete<String>(
-                      //   key: _autocompleteKey,
-                      //   focusNode: _focusNode,
-                      //   // textEditingController: tag,
-                      //   optionsBuilder: (TextEditingValue textEditingValue) {
-                      //     return categories!.where((String option) {
-                      //       print(option);
-                      //       return option
-                      //           .contains(textEditingValue.text.toLowerCase());
-                      //     }).toList();
-                      //   },
-                      //   optionsViewBuilder: (BuildContext context,
-                      //       AutocompleteOnSelected<String> onSelected,
-                      //       Iterable<String> options) {
-                      //     return Align(
-                      //       alignment: Alignment.topLeft,
-                      //       child: Material(
-                      //         elevation: 4.0,
-                      //         child: SizedBox(
-                      //           height: 200.0,
-                      //           child: ListView.builder(
-                      //             padding: const EdgeInsets.all(8.0),
-                      //             itemCount: options.length,
-                      //             itemBuilder:
-                      //                 (BuildContext context, int index) {
-                      //               final String option =
-                      //                   options.elementAt(index);
-                      //               return GestureDetector(
-                      //                 onTap: () {
-                      //                   onSelected(option);
-                      //                 },
-                      //                 child: ListTile(
-                      //                   title: Text(option),
-                      //                 ),
-                      //               );
-                      //             },
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     );
-                      //   },
-                      // ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: SizedBox(
@@ -439,22 +397,113 @@ class _EditItemPageState extends State<EditItemPage> {
                           ),
                         ),
                       ),
-                      ...?attributes?.map((a) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text("屬性:${a.label}"),
-                              ),
-                              ...a.options.map((o) => Expanded(
-                                    child: Text("${o.label}:+${o.extra / 100}"),
-                                  )),
-                              ElevatedButton(
-                                onPressed: () =>
-                                    setState(() => attributes?.remove(a)),
-                                child: const Text('刪除'),
-                              )
-                            ],
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      ...?attributes?.mapIndexed((i, a) => GestureDetector(
+                          onTap: () async {
+                            final Attribute? attribute =
+                                await _displayAddAttribute(context, a);
+                            if (attribute != null) {
+                              setState(() {
+                                attributes?[i] = attribute!;
+                              });
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(5)),
+                                      border: Border.all(
+                                        width: 2,
+                                        color: kPrimaryLightColor,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              a.label,
+                                              style: TextStyle(fontSize: 18),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                ...a.options.map((o) => Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              right: 8.0),
+                                                      child: Text(
+                                                          "${o.label}: +${o.extra / 100}"),
+                                                    )),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        const Text(
+                                          "編輯",
+                                          style:
+                                              TextStyle(color: kPrimaryColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          if (i > 0) {
+                                            var tmp = attributes![i];
+                                            attributes!.removeAt(i);
+                                            attributes!.insert(i - 1, tmp);
+                                          }
+                                        });
+                                      },
+                                      child: const Icon(
+                                        Icons.swap_vert,
+                                        color: kPrimaryColor,
+                                        size: 30,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () =>
+                                          setState(() => attributes?.remove(a)),
+                                      child: const Icon(
+                                        Icons.delete,
+                                        color: kPrimaryColor,
+                                        size: 30,
+                                      ),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
                           ))),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -466,7 +515,7 @@ class _EditItemPageState extends State<EditItemPage> {
                           // onPressed: addAttribute,
                           onPressed: () async {
                             final Attribute? attribute =
-                                await _displayAddAttribute(context);
+                                await _displayAddAttribute(context, null);
                             setState(() {
                               if (attribute != null) attributes?.add(attribute);
                             });

@@ -5,7 +5,9 @@ import '../../configs/constants.dart';
 import '../../models/restaurant.dart';
 
 class AddAttributePage extends StatefulWidget {
-  const AddAttributePage({super.key});
+  AddAttributePage({super.key, this.attribute});
+
+  Attribute? attribute;
 
   @override
   State<StatefulWidget> createState() => _AddAttributePageState();
@@ -13,12 +15,27 @@ class AddAttributePage extends StatefulWidget {
 
 class _AddAttributePageState extends State<AddAttributePage> {
   final attributeLabel = TextEditingController();
-  final label = TextEditingController();
-  List<OptionEditList> options = [OptionEditList()];
+  TextEditingController label = TextEditingController();
+  List<OptionEditList> options = [OptionEditList('', '')];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.attribute == null) {
+      options = [OptionEditList('', '')];
+    } else {
+      setState(() {
+        options = widget.attribute!.options
+            .map((e) => OptionEditList(e.label, (e.extra / 100).toString()))
+            .toList();
+        label = TextEditingController(text: widget.attribute!.label);
+      });
+    }
+  }
 
   void addOption() {
     setState(() {
-      options.add(OptionEditList());
+      options.add(OptionEditList('', ''));
     });
   }
 
@@ -43,7 +60,7 @@ class _AddAttributePageState extends State<AddAttributePage> {
       return;
     }
     for (var i = 0; i < options.length; i++) {
-      String text = options[i].label.text;
+      String text = options[i].label!.text;
       if (text.isEmpty) {
         setState(() {
           showAlertDialog(context, "第${i + 1}個選項為空");
@@ -56,7 +73,7 @@ class _AddAttributePageState extends State<AddAttributePage> {
         });
         return;
       }
-      optionSet.add(options[i].label.text);
+      optionSet.add(options[i].label!.text);
     }
 
     Navigator.pop(
@@ -65,9 +82,9 @@ class _AddAttributePageState extends State<AddAttributePage> {
             label: label.text,
             options: options
                 .map((o) => Option(
-                    label: o.label.text,
-                    extra: o.pricing.text.isNotEmpty
-                        ? (double.parse(o.pricing.text) * 100).toInt()
+                    label: o.label!.text,
+                    extra: o.pricing!.text.isNotEmpty
+                        ? (double.parse(o.pricing!.text) * 100).toInt()
                         : 0))
                 .toList()));
   }
@@ -171,6 +188,11 @@ class _AddAttributePageState extends State<AddAttributePage> {
 }
 
 class OptionEditList {
-  final label = TextEditingController();
-  final pricing = TextEditingController();
+  TextEditingController? label;
+  TextEditingController? pricing;
+
+  OptionEditList(String? label, String? pricing) {
+    this.label = TextEditingController(text: label ?? '');
+    this.pricing = TextEditingController(text: pricing ?? '');
+  }
 }

@@ -42,22 +42,24 @@ class _OrderManagementState extends State<OrderManagement> {
 
   String type = '';
 
-  int _rowsPerPage = 8;
+  final int _rowsPerPage = 8;
+  int total = 0;
 
   _OrderManagementState(this.restaurantId);
 
   @override
   void initState() {
     super.initState();
-    getBills();
-  }
-
-  getBills() {
-    listBills(restaurantId).then((orders) {
-      oldOrders = context.read<SelectedTableProvider>().tableOrders;
-
+    listBills(restaurantId,
+            startAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+            endAt: DateTime.now().millisecondsSinceEpoch ~/ 1000)
+        .then((orders) {
       context.read<SelectedTableProvider>().setAllTableOrders(orders);
+      setState(() {
+        total = orders.map((item) => item.total).sum;
+      });
     });
+    // getBills();
   }
 
   void showBill(orders) async {
@@ -94,6 +96,20 @@ class _OrderManagementState extends State<OrderManagement> {
     final tableProvider = context.watch<SelectedTableProvider>();
     List<Bill>? orders = tableProvider.tableOrders;
     filterData = orders;
+
+    void updateOrders() {
+      listBills(restaurantId,
+              startAt: start!.millisecondsSinceEpoch ~/ 1000,
+              endAt: end!.millisecondsSinceEpoch ~/ 1000,
+              status: type)
+          .then((orders) {
+        context.read<SelectedTableProvider>().setAllTableOrders(orders);
+        setState(() {
+          total = orders.map((item) => item.total).reduce((a, b) => a + b);
+        });
+        // updateOrders(orders);
+      });
+    }
 
     return MainLayout(
         automaticallyImplyLeading: true,
@@ -380,17 +396,16 @@ class _OrderManagementState extends State<OrderManagement> {
                                     start = picked.start;
                                     end = picked.end;
                                   });
-                                  listBills(restaurantId,
-                                          startAt:
-                                              start!.millisecondsSinceEpoch ~/
-                                                  1000,
-                                          endAt: end!.millisecondsSinceEpoch ~/
-                                              1000)
-                                      .then((orders) {
-                                    context
-                                        .read<SelectedTableProvider>()
-                                        .setAllTableOrders(orders);
-                                  });
+                                  updateOrders();
+                                  // listBills(restaurantId,
+                                  //         startAt:
+                                  //             start!.millisecondsSinceEpoch ~/
+                                  //                 1000,
+                                  //         endAt: end!.millisecondsSinceEpoch ~/
+                                  //             1000)
+                                  //     .then((orders) {
+                                  //   updateOrders(orders);
+                                  // });
                                 }
                               },
                               child: const Text("選擇日期")),
@@ -421,15 +436,10 @@ class _OrderManagementState extends State<OrderManagement> {
                                     onChanged: (value) {
                                       setState(() {
                                         type = value.toString();
-                                        listBills(restaurantId).then((orders) {
-                                          oldOrders = context
-                                              .read<SelectedTableProvider>()
-                                              .tableOrders;
-
-                                          context
-                                              .read<SelectedTableProvider>()
-                                              .setAllTableOrders(orders);
-                                        });
+                                        updateOrders();
+                                        // listBills(restaurantId).then((orders) {
+                                        //   updateOrders(orders);
+                                        // });
                                       });
                                     },
                                   ),
@@ -445,17 +455,12 @@ class _OrderManagementState extends State<OrderManagement> {
                                     onChanged: (value) {
                                       setState(() {
                                         type = value.toString();
-                                        listBills(restaurantId,
-                                                status: "SUBMITTED")
-                                            .then((orders) {
-                                          oldOrders = context
-                                              .read<SelectedTableProvider>()
-                                              .tableOrders;
-
-                                          context
-                                              .read<SelectedTableProvider>()
-                                              .setAllTableOrders(orders);
-                                        });
+                                        updateOrders();
+                                        // listBills(restaurantId,
+                                        //         status: "SUBMITTED")
+                                        //     .then((orders) {
+                                        //   updateOrders(orders);
+                                        // });
                                       });
                                     },
                                   ),
@@ -471,16 +476,11 @@ class _OrderManagementState extends State<OrderManagement> {
                                     onChanged: (value) {
                                       setState(() {
                                         type = value.toString();
-                                        listBills(restaurantId, status: "PAIED")
-                                            .then((orders) {
-                                          oldOrders = context
-                                              .read<SelectedTableProvider>()
-                                              .tableOrders;
-
-                                          context
-                                              .read<SelectedTableProvider>()
-                                              .setAllTableOrders(orders);
-                                        });
+                                        updateOrders();
+                                        // listBills(restaurantId, status: "PAIED")
+                                        //     .then((orders) {
+                                        //   updateOrders(orders);
+                                        // });
                                       });
                                     },
                                   ),
@@ -493,32 +493,28 @@ class _OrderManagementState extends State<OrderManagement> {
                             ),
                           ),
                           SizedBox(
-                            width: 200,
-                            height: 40,
-                            child: SearchBar(
-                              leading: const Icon(Icons.search),
-                              onChanged: (e) {
-                                setState(() {
-                                  // filterData!.sort((a, b) => b.id!.compareTo(a.id!));
-                                  // filterData = List.from(orders!);
-                                  //     .toList();
-                                  filterData = filterData
-                                      ?.where(
-                                          (element) => element.id.contains(e))
-                                      .toList();
-                                  // print(filterData?.length);
-                                  // context
-                                  //     .read<SelectedTableProvider>()
-                                  //     .setAllTableOrders(filterData!
-                                  //         .where((element) => element.id.contains(e))
-                                  //         .toList());
-                                  // print(orders?.length);
-                                  // filterData = tmp;
-                                });
-                              },
-                              // other arguments
-                            ),
+                            child: Text("所有訂單總額：\$${total / 1000}"),
                           )
+                          // SizedBox(
+                          //   width: 200,
+                          //   height: 40,
+                          //   child: SearchBar(
+                          //     leading: const Icon(Icons.search),
+                          //     onChanged: (e) {
+                          //       setState(() {
+                          //         // filterData!.sort((a, b) => b.id!.compareTo(a.id!));
+                          //         // filterData = List.from(orders!);
+                          //         //     .toList();
+                          //         filterData = filterData
+                          //             ?.where(
+                          //                 (element) => element.id.contains(e))
+                          //             .toList();
+                          //
+                          //       });
+                          //     },
+                          //     // other arguments
+                          //   ),
+                          // )
                         ],
                       ),
                     ),
@@ -566,6 +562,7 @@ class BillData extends DataTableSource {
 
   late List<Bill> _data;
   Function? onClick;
+  Map<String, String> statusMap = {'SUBMITTED': '已提交', 'PAIED': '已完成'};
 
   @override
   bool get isRowCountApproximate => false;
@@ -599,7 +596,7 @@ class BillData extends DataTableSource {
             const SizedBox(
               width: 10,
             ),
-            Text(_data[index].status),
+            Text(statusMap[_data[index].status]!),
           ],
         ),
       ),
