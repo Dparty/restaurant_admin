@@ -14,7 +14,6 @@ Future<List<Bill>> listBills(String restaurantId,
     'startAt': startAt ?? '',
     'endAt': endAt ?? '',
   };
-  print(query);
   final response = await http.get(
       Uri.https(restaurantApiDomain, "/bills",
           query.map((key, value) => MapEntry(key, value.toString()))),
