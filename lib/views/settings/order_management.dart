@@ -397,15 +397,6 @@ class _OrderManagementState extends State<OrderManagement> {
                                     end = picked.end;
                                   });
                                   updateOrders();
-                                  // listBills(restaurantId,
-                                  //         startAt:
-                                  //             start!.millisecondsSinceEpoch ~/
-                                  //                 1000,
-                                  //         endAt: end!.millisecondsSinceEpoch ~/
-                                  //             1000)
-                                  //     .then((orders) {
-                                  //   updateOrders(orders);
-                                  // });
                                 }
                               },
                               child: const Text("選擇日期")),
@@ -456,11 +447,6 @@ class _OrderManagementState extends State<OrderManagement> {
                                       setState(() {
                                         type = value.toString();
                                         updateOrders();
-                                        // listBills(restaurantId,
-                                        //         status: "SUBMITTED")
-                                        //     .then((orders) {
-                                        //   updateOrders(orders);
-                                        // });
                                       });
                                     },
                                   ),
