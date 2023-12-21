@@ -15,6 +15,7 @@ import 'package:restaurant_admin/provider/selected_item_provider.dart';
 import '../../configs/constants.dart';
 import 'package:collection/collection.dart';
 import './printer_row.dart';
+import 'formatter.dart';
 
 class EditItemPage extends StatefulWidget {
   final Item? item;
@@ -300,7 +301,10 @@ class _EditItemPageState extends State<EditItemPage> {
                       ),
                       TextFormField(
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp("[0-9.]")),
+                          XNumberTextInputFormatter(
+                              maxIntegerLength: 100,
+                              maxDecimalLength: 2,
+                              isAllowDecimal: true),
                         ],
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),

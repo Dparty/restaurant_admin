@@ -4,6 +4,7 @@ import 'package:restaurant_admin/components/dialog.dart';
 
 import '../../configs/constants.dart';
 import '../../models/restaurant.dart';
+import 'formatter.dart';
 
 class AddAttributePage extends StatefulWidget {
   AddAttributePage({super.key, this.attribute});
@@ -136,8 +137,10 @@ class _AddAttributePageState extends State<AddAttributePage> {
                                     hintText: '額外價錢',
                                   ),
                                   inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp("[0-9.]")),
+                                    XNumberTextInputFormatter(
+                                        maxIntegerLength: 100,
+                                        maxDecimalLength: 2,
+                                        isAllowDecimal: true),
                                   ],
                                   keyboardType:
                                       const TextInputType.numberWithOptions(
