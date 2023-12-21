@@ -50,7 +50,8 @@ class _EditItemPageState extends State<EditItemPage> {
   List<String>? _selectedPrinters = [];
   List<PlatformFile>? _paths;
 
-  String _status = "";
+  bool deactive = false;
+  Map<bool, String> activeValue = {false: "ACTIVED", true: "DEACTIVED"};
 
   final FocusNode _focusNode = FocusNode();
   final GlobalKey _autocompleteKey = GlobalKey();
@@ -88,7 +89,7 @@ class _EditItemPageState extends State<EditItemPage> {
     pricing = TextEditingController(
         text: ((widget.item?.pricing ?? 0) / 100).toString());
     tag = TextEditingController(text: widget.item?.tags[0].toString());
-    _status = widget.item?.status ?? Status.ACTIVED.name;
+    deactive = widget.item?.status == Status.ACTIVED.name ? false : true;
     printers = context.read<RestaurantProvider>().printers;
     _item = widget.item;
     // imgUrl = widget.item?.images?.isEmpty? null : widget.item?.images[0];
@@ -139,7 +140,7 @@ class _EditItemPageState extends State<EditItemPage> {
           tags: [tag!.text],
           name: name!.text,
           pricing: (double.parse(pricing!.text) * 100).toInt(),
-          status: _status,
+          status: activeValue[deactive]!,
           images: imgUrl?.length == 0 ? [] : [imgUrl],
           attributes: attributes!,
         ));
@@ -173,7 +174,7 @@ class _EditItemPageState extends State<EditItemPage> {
             tags: [tag!.text],
             name: name!.text,
             pricing: (double.parse(pricing!.text) * 100).toInt(),
-            status: _status,
+            status: activeValue[deactive]!,
             images: [],
             attributes: attributes!));
 
@@ -298,6 +299,9 @@ class _EditItemPageState extends State<EditItemPage> {
                         },
                       ),
                       TextFormField(
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp("[0-9.]")),
+                        ],
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
                         controller: pricing,
@@ -369,30 +373,16 @@ class _EditItemPageState extends State<EditItemPage> {
                           child: Row(
                             children: [
                               const Text('品項狀態:  '),
-                              Radio(
-                                value: "ACTIVED",
-                                groupValue: _status,
-                                onChanged: (value) {
-                                  if (value != null) {
+                              Switch(
+                                  value: deactive,
+                                  onChanged: (value) {
                                     setState(() {
-                                      _status = value;
+                                      deactive = !deactive;
                                     });
-                                  }
-                                },
-                              ),
-                              const Text('正常 '),
-                              Radio(
-                                value: "DEACTIVED",
-                                groupValue: _status,
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      _status = value;
-                                    });
-                                  }
-                                },
-                              ),
-                              const Text('估空 '),
+                                  }),
+                              deactive == true
+                                  ? const Text("估空")
+                                  : const Text("正常"),
                             ],
                           ),
                         ),
@@ -600,7 +590,11 @@ class _EditItemPageState extends State<EditItemPage> {
                                     ),
                                   ),
                                 )
-                              : const SizedBox(),
+                              : SizedBox(
+                                  height: 150,
+                                  child: Image.asset("images/default.png",
+                                      fit: BoxFit.fitHeight),
+                                ),
                       item != null
                           ? Padding(
                               padding:

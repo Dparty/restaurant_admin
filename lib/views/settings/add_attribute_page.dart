@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:restaurant_admin/components/dialog.dart';
 
 import '../../configs/constants.dart';
@@ -134,7 +135,13 @@ class _AddAttributePageState extends State<AddAttributePage> {
                                   decoration: const InputDecoration(
                                     hintText: '額外價錢',
                                   ),
-                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp("[0-9.]")),
+                                  ],
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
                                   controller: o.pricing,
                                 ),
                               ),
