@@ -96,6 +96,7 @@ class _EditItemPageState extends State<EditItemPage> {
     // imgUrl = widget.item?.images?.isEmpty? null : widget.item?.images[0];
     _selectedPrinters = widget.item?.printers ?? [];
     attributes = widget.item?.attributes ?? [];
+    _paths = null;
 
     super.didChangeDependencies();
   }
@@ -589,15 +590,17 @@ class _EditItemPageState extends State<EditItemPage> {
                                             : item.images[0],
                                       ),
                                       fit: BoxFit.fitHeight,
-                                      placeholder: const AssetImage(
-                                          "images/default.png"),
+                                      placeholder:
+                                          const NetworkImage(defaultImage),
                                     ),
-                                  ),
-                                )
-                              : SizedBox(
+                                  ))
+                              : const SizedBox(
                                   height: 150,
-                                  child: Image.asset("images/default.png",
-                                      fit: BoxFit.fitHeight),
+                                  child: FadeInImage(
+                                    image: NetworkImage(defaultImage),
+                                    fit: BoxFit.fitHeight,
+                                    placeholder: NetworkImage(defaultImage),
+                                  ),
                                 ),
                       item != null
                           ? Padding(
