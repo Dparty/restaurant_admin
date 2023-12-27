@@ -39,20 +39,18 @@ class _TableInfoViewState extends State<TableInfoView> {
   @override
   void didChangeDependencies() {
     label = TextEditingController(text: widget.table?.label.toString());
-    x = TextEditingController(text: widget.table?.x.toString());
-    y = TextEditingController(text: widget.table?.y.toString());
     super.didChangeDependencies();
   }
 
-  void create(id, label, x, y) {
-    createTable(id, label, x, y).then((table) {
+  void create(id, label) {
+    createTable(id, label).then((table) {
       showAlertDialog(context, "創建成功");
       widget.reload!();
     });
   }
 
-  void update(id, label, x, y) {
-    updateTable(id, label, x, y).then((table) {
+  void update(id, label) {
+    updateTable(id, label).then((table) {
       showAlertDialog(context, "更新成功");
       widget.reload!();
     });
@@ -114,42 +112,42 @@ class _TableInfoViewState extends State<TableInfoView> {
                           return null;
                         },
                       ),
-                      TextFormField(
-                        controller: x,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        decoration: const InputDecoration(
-                          hintText: '輸入餐桌位置 x',
-                        ),
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return '輸入餐桌位置 x';
-                          }
-                          return null;
-                        },
-                      ),
-                      TextFormField(
-                        controller: y,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        decoration: const InputDecoration(
-                          hintText: '輸入餐桌位置 y',
-                        ),
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return '輸入餐桌位置 y';
-                          }
-                          return null;
-                        },
-                      ),
+                      // TextFormField(
+                      //   controller: x,
+                      //   autovalidateMode: AutovalidateMode.onUserInteraction,
+                      //   decoration: const InputDecoration(
+                      //     hintText: '輸入餐桌位置 x',
+                      //   ),
+                      //   validator: (String? value) {
+                      //     if (value == null || value.isEmpty) {
+                      //       return '輸入餐桌位置 x';
+                      //     }
+                      //     return null;
+                      //   },
+                      // ),
+                      // TextFormField(
+                      //   controller: y,
+                      //   autovalidateMode: AutovalidateMode.onUserInteraction,
+                      //   decoration: const InputDecoration(
+                      //     hintText: '輸入餐桌位置 y',
+                      //   ),
+                      //   validator: (String? value) {
+                      //     if (value == null || value.isEmpty) {
+                      //       return '輸入餐桌位置 y';
+                      //     }
+                      //     return null;
+                      //   },
+                      // ),
                       table == null
                           ? Padding(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 16.0, horizontal: 100),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  if (formKey.currentState!.validate()) {
-                                    create(restaurant.id, label?.text,
-                                        int.parse(x!.text), int.parse(y!.text));
-                                  }
+                                  create(
+                                    restaurant.id,
+                                    label?.text,
+                                  );
                                 },
                                 child: const Text('創建'),
                               ),
@@ -191,10 +189,9 @@ class _TableInfoViewState extends State<TableInfoView> {
                                       onPressed: () {
                                         if (formKey.currentState!.validate()) {
                                           update(
-                                              table.id,
-                                              label?.text,
-                                              int.parse(x!.text),
-                                              int.parse(y!.text));
+                                            table.id,
+                                            label?.text,
+                                          );
                                         }
                                       },
                                       child: const Text("編輯餐桌"),

@@ -143,13 +143,14 @@ Future<void> deletePrinter(String id) async {
   }
 }
 
-Future<Table> createTable(
-    String restaurantId, String label, int x, int y) async {
+Future<Table> createTable(String restaurantId, String label) async {
   final token = await getToken();
-  final response = await http.post(
-      Uri.parse("$baseUrl/restaurants/$restaurantId/tables"),
-      body: jsonEncode({'label': label, 'x': x, 'y': y}),
-      headers: {'Authorization': "bearer $token"});
+  final response =
+      await http.post(Uri.parse("$baseUrl/restaurants/$restaurantId/tables"),
+          body: jsonEncode({
+            'label': label,
+          }),
+          headers: {'Authorization': "bearer $token"});
   if (response.statusCode == 201) {
     return Table.fromJson(jsonDecode(response.body));
   } else {
@@ -157,10 +158,12 @@ Future<Table> createTable(
   }
 }
 
-Future<Table> updateTable(String tableId, String label, int x, int y) async {
+Future<Table> updateTable(String tableId, String label) async {
   final token = await getToken();
   final response = await http.put(Uri.parse("$baseUrl/tables/$tableId"),
-      body: jsonEncode({'label': label, 'x': x, 'y': y}),
+      body: jsonEncode({
+        'label': label,
+      }),
       headers: {'Authorization': "bearer $token"});
   if (response.statusCode == 200) {
     return Table.fromJson(jsonDecode(response.body));
