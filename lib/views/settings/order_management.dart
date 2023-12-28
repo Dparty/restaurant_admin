@@ -85,7 +85,6 @@ class _OrderManagementState extends State<OrderManagement> {
           var tmp = orders.map((item) => item.total).sum / 100;
           _dataSource[5 - i] =
               SalesData((now.month - i).toString(), tmp.toDouble());
-
           // total = orders.map((item) => item.total).sum;
         });
       });

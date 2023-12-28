@@ -36,7 +36,7 @@ Widget itemCard(BuildContext context, item,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AspectRatio(
-              aspectRatio: 18.0 / 13.0,
+              aspectRatio: 16.0 / 13.0,
               child: Image.network(
                 item!.images.isEmpty
                     ? ("$defaultImage?imageView2/1/w/268/q/85")
@@ -46,7 +46,8 @@ Widget itemCard(BuildContext context, item,
             ),
             Center(
               child: Padding(
-                padding: const EdgeInsets.only(top: 16, right: 8, left: 8),
+                padding: const EdgeInsets.only(
+                    top: 16, right: 8, left: 8, bottom: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

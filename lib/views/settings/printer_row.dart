@@ -49,7 +49,6 @@ class _PrinterRow extends State<PrinterRow> {
           ),
           GestureDetector(
             onTap: () {
-              print(widget.index);
               widget.onDelete!(widget.index);
             },
             child: const Icon(
