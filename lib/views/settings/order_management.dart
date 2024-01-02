@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'dart:async';
 
 import 'package:restaurant_admin/api/bill.dart';
 import 'package:restaurant_admin/configs/constants.dart';
+import 'package:restaurant_admin/models/restaurant.dart';
 import 'package:restaurant_admin/views/components/main_layout.dart';
 
 import 'package:provider/provider.dart';
@@ -43,7 +45,6 @@ class _OrderManagementState extends State<OrderManagement> {
 
   String type = '';
 
-  // final int _rowsPerPage = 8;
   int total = 0;
 
   List<SalesData> _dataSource = List.generate(6, (index) => SalesData('0', 0));
@@ -51,19 +52,26 @@ class _OrderManagementState extends State<OrderManagement> {
   _OrderManagementState(this.restaurantId);
   late TooltipBehavior _tooltipBehavior;
   var _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  var _itemRowsPerPage = PaginatedDataTable.defaultRowsPerPage;
 
   @override
   void initState() {
     super.initState();
+    var now = DateTime.now();
     _tooltipBehavior = TooltipBehavior(enable: true);
     getDataSource();
 
     listBills(restaurantId,
-            startAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-            endAt: DateTime.now().millisecondsSinceEpoch ~/ 1000)
+            startAt: DateTime(now.year, now.month, now.day, 00, 00, 00)
+                    .millisecondsSinceEpoch ~/
+                1000,
+            endAt: DateTime(now.year, now.month, now.day, 23, 59, 59)
+                    .millisecondsSinceEpoch ~/
+                1000)
         .then((orders) {
       context.read<SelectedTableProvider>().setAllTableOrders(orders);
       setState(() {
+        filterItemData = getItemAmount(orders);
         total = orders.map((item) => item.total).sum;
       });
     });
@@ -84,11 +92,30 @@ class _OrderManagementState extends State<OrderManagement> {
         setState(() {
           var tmp = orders.map((item) => item.total).sum / 100;
           _dataSource[5 - i] =
-              SalesData((now.month - i).toString(), tmp.toDouble());
+              SalesData('前${(i).toString()}個月', tmp.toDouble());
           // total = orders.map((item) => item.total).sum;
         });
       });
     }
+  }
+
+  List<ItemAmountData> getItemAmount(List<Bill> billList) {
+    var itemsMap = <String, ItemAmountData>{};
+
+    for (var i = 0; i < billList.length; i++) {
+      for (var order in billList[i].orders) {
+        var item = order.item;
+        if (!itemsMap.containsKey(item.id)) {
+          itemsMap[item.id] = ItemAmountData(item, 1);
+        } else {
+          itemsMap[item.id]?.amount += 1;
+        }
+      }
+    }
+
+    List<ItemAmountData> itemList = [];
+    itemsMap.forEach((k, v) => itemList.add(v));
+    return itemList;
   }
 
   void showBill(orders) async {
@@ -102,6 +129,7 @@ class _OrderManagementState extends State<OrderManagement> {
 
   bool sort = true;
   List<Bill>? filterData;
+  List<ItemAmountData>? filterItemData = [];
 
   onSortColumn(int columnIndex, bool ascending) {
     if (columnIndex == 0) {
@@ -119,6 +147,22 @@ class _OrderManagementState extends State<OrderManagement> {
     }
   }
 
+  onSortItemColumn(int columnIndex, bool ascending) {
+    if (columnIndex == 0) {
+      if (sort) {
+        filterItemData!.sort((a, b) => a.info.id!.compareTo(b.info.id!));
+      } else {
+        filterItemData!.sort((a, b) => b.info.id!.compareTo(a.info.id!));
+      }
+    } else if (columnIndex == 5) {
+      if (sort) {
+        filterItemData!.sort((a, b) => a.amount!.compareTo(b.amount!));
+      } else {
+        filterItemData!.sort((a, b) => b.amount!.compareTo(a.amount!));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final restaurant = context.watch<RestaurantProvider>();
@@ -127,6 +171,7 @@ class _OrderManagementState extends State<OrderManagement> {
     filterData = orders;
 
     void updateOrders() {
+      if (start == null || end == null) {}
       listBills(restaurantId,
               startAt: start!.millisecondsSinceEpoch ~/ 1000,
               endAt: end!.millisecondsSinceEpoch ~/ 1000,
@@ -134,6 +179,7 @@ class _OrderManagementState extends State<OrderManagement> {
           .then((orders) {
         context.read<SelectedTableProvider>().setAllTableOrders(orders);
         setState(() {
+          filterItemData = getItemAmount(orders);
           total = orders.map((item) => item.total).reduce((a, b) => a + b);
         });
       });
@@ -150,23 +196,6 @@ class _OrderManagementState extends State<OrderManagement> {
                 const SizedBox(
                   height: 10,
                 ),
-                Center(
-                    child: SfCartesianChart(
-                        tooltipBehavior: _tooltipBehavior,
-                        primaryXAxis: CategoryAxis(),
-                        title: ChartTitle(text: '前六月分析'), //Chart title.
-                        legend: Legend(isVisible: true), // Enables the legend.
-                        series: <LineSeries<SalesData, String>>[
-                      LineSeries<SalesData, String>(
-                          name: '總額',
-                          enableTooltip: true,
-                          dataSource: _dataSource,
-                          xValueMapper: (SalesData sales, _) => sales.year,
-                          yValueMapper: (SalesData sales, _) => sales.sales,
-                          dataLabelSettings: const DataLabelSettings(
-                              isVisible: true) // Enables the data label.
-                          )
-                    ])),
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Padding(
@@ -186,7 +215,6 @@ class _OrderManagementState extends State<OrderManagement> {
                       // onRowsPerPageChanged: (value) =>
                       //     setState(() => _rowsPerPage = value!),
                       onPageChanged: (int? n) {
-                        /// value of n is the number of rows displayed so far
                         setState(() {
                           if (n != null) {
                             if (BillData(filterData!, showBill).rowCount - n <
@@ -254,8 +282,20 @@ class _OrderManagementState extends State<OrderManagement> {
                                           });
                                   if (picked != null) {
                                     setState(() {
-                                      start = picked.start;
-                                      end = picked.end;
+                                      start = DateTime(
+                                          picked.start.year,
+                                          picked.start.month,
+                                          picked.start.day,
+                                          00,
+                                          00,
+                                          00);
+                                      end = DateTime(
+                                          picked.end.year,
+                                          picked.end.month,
+                                          picked.end.day,
+                                          23,
+                                          59,
+                                          59);
                                     });
                                     updateOrders();
                                   }
@@ -338,26 +378,6 @@ class _OrderManagementState extends State<OrderManagement> {
                             SizedBox(
                               child: Text("所有訂單總額：\$${total / 100}"),
                             )
-                            // SizedBox(
-                            //   width: 200,
-                            //   height: 40,
-                            //   child: SearchBar(
-                            //     leading: const Icon(Icons.search),
-                            //     onChanged: (e) {
-                            //       setState(() {
-                            //         // filterData!.sort((a, b) => b.id!.compareTo(a.id!));
-                            //         // filterData = List.from(orders!);
-                            //         //     .toList();
-                            //         filterData = filterData
-                            //             ?.where(
-                            //                 (element) => element.id.contains(e))
-                            //             .toList();
-                            //
-                            //       });
-                            //     },
-                            //     // other arguments
-                            //   ),
-                            // )
                           ],
                         ),
                       ),
@@ -390,6 +410,87 @@ class _OrderManagementState extends State<OrderManagement> {
                     ),
                   ),
                 ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: PaginatedDataTable(
+                      actions: [
+                        IconButton(
+                          iconSize: 24,
+                          icon: const Icon(Icons.refresh),
+                          onPressed: () {
+                            updateOrders();
+                          },
+                        ),
+                      ],
+                      rowsPerPage: _itemRowsPerPage,
+                      onPageChanged: (int? n) {
+                        /// value of n is the number of rows displayed so far
+                        setState(() {
+                          if (n != null) {
+                            if (ItemData(filterItemData!).rowCount - n <
+                                _itemRowsPerPage) {
+                              _itemRowsPerPage =
+                                  ItemData(filterItemData!).rowCount - n;
+                            } else {
+                              _itemRowsPerPage =
+                                  PaginatedDataTable.defaultRowsPerPage;
+                            }
+                          } else {
+                            _itemRowsPerPage = 0;
+                          }
+                        });
+                      },
+                      sortColumnIndex: 0,
+                      sortAscending: sort,
+                      source: ItemData(filterItemData!),
+                      header: const Text('出貨列表'),
+                      columns: [
+                        DataColumn(
+                            label: const Text('ID'),
+                            onSort: (columnIndex, ascending) {
+                              setState(() {
+                                sort = !sort;
+                              });
+                              onSortItemColumn(columnIndex, ascending);
+                            }),
+                        const DataColumn(label: Text('品項名稱')),
+                        const DataColumn(label: Text('打印機')),
+                        const DataColumn(label: Text('品項狀態')),
+                        const DataColumn(label: Text('品項價格')),
+                        DataColumn(
+                            label: const Text('出貨量(點擊排序)'),
+                            onSort: (columnIndex, ascending) {
+                              setState(() {
+                                sort = !sort;
+                              });
+                              onSortItemColumn(columnIndex, ascending);
+                            }),
+                      ],
+                      columnSpacing: 70,
+                      horizontalMargin: 10,
+                      showCheckboxColumn: false,
+                    ),
+                  ),
+                ),
+                Center(
+                    child: SfCartesianChart(
+                        tooltipBehavior: _tooltipBehavior,
+                        primaryXAxis: CategoryAxis(),
+                        title: ChartTitle(text: '前三月分析'), //Chart title.
+                        legend: Legend(isVisible: true), // Enables the legend.
+                        series: <LineSeries<SalesData, String>>[
+                      LineSeries<SalesData, String>(
+                          name: '總額',
+                          enableTooltip: true,
+                          dataSource: _dataSource,
+                          xValueMapper: (SalesData sales, _) => sales.year,
+                          yValueMapper: (SalesData sales, _) => sales.sales,
+                          dataLabelSettings: const DataLabelSettings(
+                              isVisible: true) // Enables the data label.
+                          )
+                    ])),
               ],
             ),
           ),
@@ -397,7 +498,6 @@ class _OrderManagementState extends State<OrderManagement> {
   }
 }
 
-// The "soruce" of the table
 class BillData extends DataTableSource {
   BillData(List<Bill> _data, Function? onClick) {
     this._data = _data;
@@ -468,8 +568,61 @@ class BillData extends DataTableSource {
   }
 }
 
+class ItemData extends DataTableSource {
+  ItemData(List<ItemAmountData> _data) {
+    this._data = _data;
+  }
+
+  late List<ItemAmountData> _data;
+  Function? onClick;
+  Map<String, String> statusMap = {'ACTIVED': '正常', 'DEACTIVED': '估空'};
+
+  @override
+  bool get isRowCountApproximate => false;
+  @override
+  int get rowCount => _data.length;
+  @override
+  int get selectedRowCount => 0;
+  @override
+  DataRow getRow(int index) {
+    return DataRow(cells: [
+      DataCell(Text(_data[index].info.id.toString())),
+      DataCell(Text(_data[index].info.name.toString())),
+      DataCell(Text(_data[index].info.printers.toString())),
+      DataCell(
+        Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _data[index].info.status == 'ACTIVED'
+                    ? Colors.blue
+                    : Colors.yellow,
+              ),
+              height: 10,
+              width: 10,
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Text(statusMap[_data[index].info.status]!),
+          ],
+        ),
+      ),
+      DataCell(Text('\$ ${(_data[index].info.pricing / 100).toString()}')),
+      DataCell(Text((_data[index].amount).toString())),
+    ]);
+  }
+}
+
 class SalesData {
   SalesData(this.year, this.sales);
   final String year;
   final double sales;
+}
+
+class ItemAmountData {
+  ItemAmountData(this.info, this.amount);
+  final Item info;
+  late int amount;
 }
