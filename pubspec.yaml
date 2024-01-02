@@ -50,6 +50,7 @@ dependencies:
   screenshot: ^2.1.0
   permission_handler: ^11.0.1
   intl: ^0.17.0
+  syncfusion_flutter_charts:
 
 
 dev_dependencies:

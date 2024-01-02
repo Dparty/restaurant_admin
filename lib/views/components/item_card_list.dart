@@ -45,7 +45,7 @@ class _ItemCardListViewState extends State<ItemCardListView> {
                   crossAxisCount:
                       MediaQuery.of(context).size.width > 1440 ? 4 : 3,
                   // childAspectRatio: (itemWidth / itemHeight),
-                  childAspectRatio: 1,
+                  childAspectRatio: 0.95,
                   primary: false,
                   children: [
                     ...widget.itemList!

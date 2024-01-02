@@ -18,6 +18,7 @@ import '../../../models/bill.dart';
 import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
 import '../components/showbill.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 // import '../../provider/socket_util.dart';
 
@@ -37,19 +38,26 @@ class _OrderManagementState extends State<OrderManagement> {
   List<Bill>? oldOrders;
   List<String>? oldIdList;
 
-  DateTime? start;
-  DateTime? end;
+  DateTime? start = DateTime.now();
+  DateTime? end = DateTime.now();
 
   String type = '';
 
-  final int _rowsPerPage = 8;
+  // final int _rowsPerPage = 8;
   int total = 0;
 
+  List<SalesData> _dataSource = List.generate(6, (index) => SalesData('0', 0));
+
   _OrderManagementState(this.restaurantId);
+  late TooltipBehavior _tooltipBehavior;
+  var _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
 
   @override
   void initState() {
     super.initState();
+    _tooltipBehavior = TooltipBehavior(enable: true);
+    getDataSource();
+
     listBills(restaurantId,
             startAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
             endAt: DateTime.now().millisecondsSinceEpoch ~/ 1000)
@@ -60,6 +68,27 @@ class _OrderManagementState extends State<OrderManagement> {
       });
     });
     // getBills();
+  }
+
+  void getDataSource() {
+    var now = DateTime.now();
+    for (int i = 0; i < 6; i++) {
+      listBills(restaurantId,
+              startAt: DateTime(now.year, now.month - i - 1, now.day)
+                      .millisecondsSinceEpoch ~/
+                  1000,
+              endAt: DateTime(now.year, now.month - i, now.day)
+                      .millisecondsSinceEpoch ~/
+                  1000)
+          .then((orders) {
+        setState(() {
+          var tmp = orders.map((item) => item.total).sum / 100;
+          _dataSource[5 - i] =
+              SalesData((now.month - i).toString(), tmp.toDouble());
+          // total = orders.map((item) => item.total).sum;
+        });
+      });
+    }
   }
 
   void showBill(orders) async {
@@ -107,7 +136,6 @@ class _OrderManagementState extends State<OrderManagement> {
         setState(() {
           total = orders.map((item) => item.total).reduce((a, b) => a + b);
         });
-        // updateOrders(orders);
       });
     }
 
@@ -116,424 +144,254 @@ class _OrderManagementState extends State<OrderManagement> {
         centerTitle: "訂單列表",
         center: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              // Card(
-              //   margin:
-              //       const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-              //   shape: RoundedRectangleBorder(
-              //       borderRadius: BorderRadius.circular(15)),
-              //   child: Padding(
-              //     padding:
-              //         const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              //     child: Row(
-              //       children: [
-              //         Text(DateFormat('yyyy-MM-dd')
-              //                 .format(start ?? DateTime.now())
-              //                 ?.toString() ??
-              //             "-"),
-              //         const Text("  -  "),
-              //         Text(DateFormat('yyyy-MM-dd')
-              //                 .format(end ?? DateTime.now())
-              //                 ?.toString() ??
-              //             "-"),
-              //         const SizedBox(
-              //           width: 20,
-              //         ),
-              //         ElevatedButton(
-              //             onPressed: () async {
-              //               DateTimeRange? picked = await showDateRangePicker(
-              //                   context: context,
-              //                   cancelText: '取消',
-              //                   confirmText: '確認',
-              //                   saveText: '確認',
-              //                   firstDate: DateTime(2000),
-              //                   lastDate: DateTime.now(),
-              //                   builder: (context, child) {
-              //                     return Theme(
-              //                       data: ThemeData.light().copyWith(
-              //                         colorScheme: ColorScheme.light(
-              //                           // primary: MyColors.primary,
-              //                           primary: Theme.of(context)
-              //                               .colorScheme
-              //                               .primary,
-              //                           onPrimary: Colors.white,
-              //                           surface: Colors.white,
-              //                           onSurface: Colors.black,
-              //                         ),
-              //                         //.dialogBackgroundColor:Colors.blue[900],
-              //                       ),
-              //                       child: Column(
-              //                         mainAxisAlignment:
-              //                             MainAxisAlignment.center,
-              //                         crossAxisAlignment:
-              //                             CrossAxisAlignment.center,
-              //                         children: [
-              //                           ConstrainedBox(
-              //                             constraints: const BoxConstraints(
-              //                               maxWidth: 400.0,
-              //                               maxHeight: 520.0,
-              //                             ),
-              //                             child: child,
-              //                           )
-              //                         ],
-              //                       ),
-              //                     );
-              //                     // return Column(
-              //                     //   children: [
-              //                     //     ConstrainedBox(
-              //                     //       constraints: const BoxConstraints(
-              //                     //         maxWidth: 400.0,
-              //                     //         maxHeight: 400.0,
-              //                     //       ),
-              //                     //       child: child,
-              //                     //     )
-              //                     //   ],
-              //                     // );
-              //                   });
-              //               if (picked != null) {
-              //                 setState(() {
-              //                   start = picked.start;
-              //                   end = picked.end;
-              //                 });
-              //                 listBills(restaurantId,
-              //                         startAt:
-              //                             start!.millisecondsSinceEpoch ~/ 1000,
-              //                         endAt:
-              //                             end!.millisecondsSinceEpoch ~/ 1000)
-              //                     .then((orders) {
-              //                   oldOrders = context
-              //                       .read<SelectedTableProvider>()
-              //                       .tableOrders;
-              //
-              //                   context
-              //                       .read<SelectedTableProvider>()
-              //                       .setAllTableOrders(orders);
-              //                 });
-              //               }
-              //             },
-              //             child: const Text("選擇日期")),
-              //         const SizedBox(
-              //           width: 50,
-              //         ),
-              //         SizedBox(
-              //           width: 350,
-              //           child: Row(
-              //             mainAxisAlignment: MainAxisAlignment.start,
-              //             children: [
-              //               Row(children: [
-              //                 Radio(
-              //                   value: "",
-              //                   groupValue: type,
-              //                   onChanged: (value) {
-              //                     setState(() {
-              //                       type = value.toString();
-              //                       listBills(restaurantId).then((orders) {
-              //                         oldOrders = context
-              //                             .read<SelectedTableProvider>()
-              //                             .tableOrders;
-              //
-              //                         context
-              //                             .read<SelectedTableProvider>()
-              //                             .setAllTableOrders(orders);
-              //                       });
-              //                     });
-              //                   },
-              //                 ),
-              //                 const Text(
-              //                   '全部',
-              //                   style: TextStyle(fontSize: 17.0),
-              //                 ),
-              //               ]),
-              //               Row(children: [
-              //                 Radio(
-              //                   value: "SUBMITTED",
-              //                   groupValue: type,
-              //                   onChanged: (value) {
-              //                     setState(() {
-              //                       type = value.toString();
-              //                       listBills(restaurantId, status: "SUBMITTED")
-              //                           .then((orders) {
-              //                         oldOrders = context
-              //                             .read<SelectedTableProvider>()
-              //                             .tableOrders;
-              //
-              //                         context
-              //                             .read<SelectedTableProvider>()
-              //                             .setAllTableOrders(orders);
-              //                       });
-              //                     });
-              //                   },
-              //                 ),
-              //                 const Text(
-              //                   '已提交',
-              //                   style: TextStyle(fontSize: 17.0),
-              //                 ),
-              //               ]),
-              //               Row(children: [
-              //                 Radio(
-              //                   value: "PAIED",
-              //                   groupValue: type,
-              //                   onChanged: (value) {
-              //                     setState(() {
-              //                       type = value.toString();
-              //                       listBills(restaurantId, status: "PAIED")
-              //                           .then((orders) {
-              //                         oldOrders = context
-              //                             .read<SelectedTableProvider>()
-              //                             .tableOrders;
-              //
-              //                         context
-              //                             .read<SelectedTableProvider>()
-              //                             .setAllTableOrders(orders);
-              //                       });
-              //                     });
-              //                   },
-              //                 ),
-              //                 const Text(
-              //                   '已完成',
-              //                   style: TextStyle(fontSize: 17.0),
-              //                 ),
-              //               ]),
-              //             ],
-              //           ),
-              //         ),
-              //         SizedBox(
-              //           width: 200,
-              //           height: 40,
-              //           child: SearchBar(
-              //             leading: const Icon(Icons.search),
-              //             onChanged: (e) {
-              //               setState(() {
-              //                 // filterData!.sort((a, b) => b.id!.compareTo(a.id!));
-              //                 // filterData = List.from(orders!);
-              //                 //     .toList();
-              //                 filterData = filterData
-              //                     ?.where((element) => element.id.contains(e))
-              //                     .toList();
-              //                 // print(filterData?.length);
-              //                 // context
-              //                 //     .read<SelectedTableProvider>()
-              //                 //     .setAllTableOrders(filterData!
-              //                 //         .where((element) => element.id.contains(e))
-              //                 //         .toList());
-              //                 // print(orders?.length);
-              //                 // filterData = tmp;
-              //               });
-              //             },
-              //             // other arguments
-              //           ),
-              //         )
-              //       ],
-              //     ),
-              //   ),
-              // ),
-              const SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: PaginatedDataTable(
-                    actions: [Icon(Icons.refresh)],
-                    rowsPerPage: _rowsPerPage,
-                    // availableRowsPerPage: [8, 16, 20],
-                    // onRowsPerPageChanged: (value) =>
-                    //     setState(() => _rowsPerPage = value!),
-                    sortColumnIndex: 0,
-                    sortAscending: sort,
-                    source: BillData(filterData!, showBill),
-                    // header: const Text('訂單列表'),
-                    header: SizedBox(
-                      height: 200,
-                      child: Row(
-                        children: [
-                          ElevatedButton(
-                              onPressed: () async {
-                                DateTimeRange? picked =
-                                    await showDateRangePicker(
-                                        context: context,
-                                        cancelText: '取消',
-                                        confirmText: '確認',
-                                        saveText: '確認',
-                                        firstDate: DateTime(2000),
-                                        lastDate: DateTime.now(),
-                                        builder: (context, child) {
-                                          return Theme(
-                                            data: ThemeData.light().copyWith(
-                                              colorScheme: ColorScheme.light(
-                                                // primary: MyColors.primary,
-                                                primary: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                                onPrimary: Colors.white,
-                                                surface: Colors.white,
-                                                onSurface: Colors.black,
-                                              ),
-                                              //.dialogBackgroundColor:Colors.blue[900],
-                                            ),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                ConstrainedBox(
-                                                  constraints:
-                                                      const BoxConstraints(
-                                                    maxWidth: 400.0,
-                                                    maxHeight: 520.0,
-                                                  ),
-                                                  child: child,
-                                                )
-                                              ],
-                                            ),
-                                          );
-                                        });
-                                if (picked != null) {
-                                  setState(() {
-                                    start = picked.start;
-                                    end = picked.end;
-                                  });
-                                  updateOrders();
-                                }
-                              },
-                              child: const Text("選擇日期")),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Text(DateFormat('yyyy年MM月dd日')
-                                  .format(start ?? DateTime.now())
-                                  ?.toString() ??
-                              "-"),
-                          const Text("  -  "),
-                          Text(DateFormat('yyyy年MM月dd日')
-                                  .format(end ?? DateTime.now())
-                                  ?.toString() ??
-                              "-"),
-                          const SizedBox(
-                            width: 50,
-                          ),
-                          SizedBox(
-                            width: 350,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Row(children: [
-                                  Radio(
-                                    value: "",
-                                    groupValue: type,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        type = value.toString();
-                                        updateOrders();
-                                        // listBills(restaurantId).then((orders) {
-                                        //   updateOrders(orders);
-                                        // });
-                                      });
-                                    },
-                                  ),
-                                  const Text(
-                                    '全部',
-                                    style: TextStyle(fontSize: 17.0),
-                                  ),
-                                ]),
-                                Row(children: [
-                                  Radio(
-                                    value: "SUBMITTED",
-                                    groupValue: type,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        type = value.toString();
-                                        updateOrders();
-                                      });
-                                    },
-                                  ),
-                                  const Text(
-                                    '已提交',
-                                    style: TextStyle(fontSize: 17.0),
-                                  ),
-                                ]),
-                                Row(children: [
-                                  Radio(
-                                    value: "PAIED",
-                                    groupValue: type,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        type = value.toString();
-                                        updateOrders();
-                                        // listBills(restaurantId, status: "PAIED")
-                                        //     .then((orders) {
-                                        //   updateOrders(orders);
-                                        // });
-                                      });
-                                    },
-                                  ),
-                                  const Text(
-                                    '已完成',
-                                    style: TextStyle(fontSize: 17.0),
-                                  ),
-                                ]),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            child: Text("所有訂單總額：\$${total / 100}"),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                Center(
+                    child: SfCartesianChart(
+                        tooltipBehavior: _tooltipBehavior,
+                        primaryXAxis: CategoryAxis(),
+                        title: ChartTitle(text: '前六月分析'), //Chart title.
+                        legend: Legend(isVisible: true), // Enables the legend.
+                        series: <LineSeries<SalesData, String>>[
+                      LineSeries<SalesData, String>(
+                          name: '總額',
+                          enableTooltip: true,
+                          dataSource: _dataSource,
+                          xValueMapper: (SalesData sales, _) => sales.year,
+                          yValueMapper: (SalesData sales, _) => sales.sales,
+                          dataLabelSettings: const DataLabelSettings(
+                              isVisible: true) // Enables the data label.
                           )
-                          // SizedBox(
-                          //   width: 200,
-                          //   height: 40,
-                          //   child: SearchBar(
-                          //     leading: const Icon(Icons.search),
-                          //     onChanged: (e) {
-                          //       setState(() {
-                          //         // filterData!.sort((a, b) => b.id!.compareTo(a.id!));
-                          //         // filterData = List.from(orders!);
-                          //         //     .toList();
-                          //         filterData = filterData
-                          //             ?.where(
-                          //                 (element) => element.id.contains(e))
-                          //             .toList();
-                          //
-                          //       });
-                          //     },
-                          //     // other arguments
-                          //   ),
-                          // )
-                        ],
+                    ])),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: PaginatedDataTable(
+                      actions: [
+                        IconButton(
+                          iconSize: 24,
+                          icon: const Icon(Icons.refresh),
+                          onPressed: () {
+                            updateOrders();
+                          },
+                        ),
+                      ], //
+                      rowsPerPage: _rowsPerPage,
+                      // availableRowsPerPage: [8, 16, 20],
+                      // onRowsPerPageChanged: (value) =>
+                      //     setState(() => _rowsPerPage = value!),
+                      onPageChanged: (int? n) {
+                        /// value of n is the number of rows displayed so far
+                        setState(() {
+                          if (n != null) {
+                            if (BillData(filterData!, showBill).rowCount - n <
+                                _rowsPerPage) {
+                              _rowsPerPage =
+                                  BillData(filterData!, showBill).rowCount - n;
+                            } else {
+                              _rowsPerPage =
+                                  PaginatedDataTable.defaultRowsPerPage;
+                            }
+                          } else {
+                            _rowsPerPage = 0;
+                          }
+                        });
+                      },
+                      sortColumnIndex: 0,
+                      sortAscending: sort,
+                      source: BillData(filterData!, showBill),
+                      // header: const Text('訂單列表'),
+                      header: SizedBox(
+                        height: 200,
+                        child: Row(
+                          children: [
+                            ElevatedButton(
+                                onPressed: () async {
+                                  DateTimeRange? picked =
+                                      await showDateRangePicker(
+                                          context: context,
+                                          cancelText: '取消',
+                                          confirmText: '確認',
+                                          saveText: '確認',
+                                          firstDate: DateTime(2000),
+                                          lastDate: DateTime.now(),
+                                          builder: (context, child) {
+                                            return Theme(
+                                              data: ThemeData.light().copyWith(
+                                                colorScheme: ColorScheme.light(
+                                                  // primary: MyColors.primary,
+                                                  primary: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                                  onPrimary: Colors.white,
+                                                  surface: Colors.white,
+                                                  onSurface: Colors.black,
+                                                ),
+                                                //.dialogBackgroundColor:Colors.blue[900],
+                                              ),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  ConstrainedBox(
+                                                    constraints:
+                                                        const BoxConstraints(
+                                                      maxWidth: 400.0,
+                                                      maxHeight: 520.0,
+                                                    ),
+                                                    child: child,
+                                                  )
+                                                ],
+                                              ),
+                                            );
+                                          });
+                                  if (picked != null) {
+                                    setState(() {
+                                      start = picked.start;
+                                      end = picked.end;
+                                    });
+                                    updateOrders();
+                                  }
+                                },
+                                child: const Text("選擇日期")),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(DateFormat('yyyy年MM月dd日')
+                                    .format(start ?? DateTime.now())
+                                    ?.toString() ??
+                                "-"),
+                            const Text("  -  "),
+                            Text(DateFormat('yyyy年MM月dd日')
+                                    .format(end ?? DateTime.now())
+                                    ?.toString() ??
+                                "-"),
+                            const SizedBox(
+                              width: 50,
+                            ),
+                            SizedBox(
+                              width: 350,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Row(children: [
+                                    Radio(
+                                      value: "",
+                                      groupValue: type,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          type = value.toString();
+                                          updateOrders();
+                                          // listBills(restaurantId).then((orders) {
+                                          //   updateOrders(orders);
+                                          // });
+                                        });
+                                      },
+                                    ),
+                                    const Text(
+                                      '全部',
+                                      style: TextStyle(fontSize: 17.0),
+                                    ),
+                                  ]),
+                                  Row(children: [
+                                    Radio(
+                                      value: "SUBMITTED",
+                                      groupValue: type,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          type = value.toString();
+                                          updateOrders();
+                                        });
+                                      },
+                                    ),
+                                    const Text(
+                                      '已提交',
+                                      style: TextStyle(fontSize: 17.0),
+                                    ),
+                                  ]),
+                                  Row(children: [
+                                    Radio(
+                                      value: "PAIED",
+                                      groupValue: type,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          type = value.toString();
+                                          updateOrders();
+                                        });
+                                      },
+                                    ),
+                                    const Text(
+                                      '已完成',
+                                      style: TextStyle(fontSize: 17.0),
+                                    ),
+                                  ]),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              child: Text("所有訂單總額：\$${total / 100}"),
+                            )
+                            // SizedBox(
+                            //   width: 200,
+                            //   height: 40,
+                            //   child: SearchBar(
+                            //     leading: const Icon(Icons.search),
+                            //     onChanged: (e) {
+                            //       setState(() {
+                            //         // filterData!.sort((a, b) => b.id!.compareTo(a.id!));
+                            //         // filterData = List.from(orders!);
+                            //         //     .toList();
+                            //         filterData = filterData
+                            //             ?.where(
+                            //                 (element) => element.id.contains(e))
+                            //             .toList();
+                            //
+                            //       });
+                            //     },
+                            //     // other arguments
+                            //   ),
+                            // )
+                          ],
+                        ),
                       ),
+                      columns: [
+                        DataColumn(
+                            label: const Text('訂單ID'),
+                            onSort: (columnIndex, ascending) {
+                              setState(() {
+                                sort = !sort;
+                              });
+                              onSortColumn(columnIndex, ascending);
+                            }),
+                        const DataColumn(label: Text('取餐號')),
+                        const DataColumn(label: Text('訂單時間')),
+                        const DataColumn(label: Text('點餐桌')),
+                        const DataColumn(label: Text('訂單狀態')),
+                        DataColumn(
+                            label: const Text('訂單總額'),
+                            onSort: (columnIndex, ascending) {
+                              setState(() {
+                                sort = !sort;
+                              });
+                              onSortColumn(columnIndex, ascending);
+                            }),
+                        const DataColumn(label: Text('訂單詳情')),
+                      ],
+                      columnSpacing: 70,
+                      horizontalMargin: 10,
+                      showCheckboxColumn: false,
                     ),
-                    columns: [
-                      DataColumn(
-                          label: const Text('訂單ID'),
-                          onSort: (columnIndex, ascending) {
-                            setState(() {
-                              sort = !sort;
-                            });
-                            onSortColumn(columnIndex, ascending);
-                          }),
-                      const DataColumn(label: Text('取餐號')),
-                      const DataColumn(label: Text('訂單時間')),
-                      const DataColumn(label: Text('點餐桌')),
-                      const DataColumn(label: Text('訂單狀態')),
-                      DataColumn(
-                          label: const Text('訂單總額'),
-                          onSort: (columnIndex, ascending) {
-                            setState(() {
-                              sort = !sort;
-                            });
-                            onSortColumn(columnIndex, ascending);
-                          }),
-                      const DataColumn(label: Text('訂單詳情')),
-                    ],
-                    columnSpacing: 70,
-                    horizontalMargin: 10,
-                    showCheckboxColumn: false,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ));
   }
@@ -608,4 +466,10 @@ class BillData extends DataTableSource {
       )
     ]);
   }
+}
+
+class SalesData {
+  SalesData(this.year, this.sales);
+  final String year;
+  final double sales;
 }
