@@ -379,7 +379,7 @@ class _EditItemPageState extends State<EditItemPage> {
                             children: [
                               const Text('品項狀態:  '),
                               Switch(
-                                  value: deactive,
+                                  value: !deactive,
                                   onChanged: (value) {
                                     setState(() {
                                       deactive = !deactive;
