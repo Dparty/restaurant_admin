@@ -72,7 +72,7 @@ class _OrderManagementState extends State<OrderManagement> {
       context.read<SelectedTableProvider>().setAllTableOrders(orders);
       setState(() {
         filterItemData = getItemAmount(orders);
-        total = orders.map((item) => item.total).sum;
+        total = orders.map((item) => item.total.truncate()).sum.truncate();
       });
     });
     // getBills();
@@ -90,7 +90,8 @@ class _OrderManagementState extends State<OrderManagement> {
                   1000)
           .then((orders) {
         setState(() {
-          var tmp = orders.map((item) => item.total).sum / 100;
+          var tmp = (orders.map((item) => item.total.truncate()).sum / 100)
+              .truncate();
           _dataSource[5 - i] =
               SalesData('前${(i).toString()}個月', tmp.toDouble());
           // total = orders.map((item) => item.total).sum;
@@ -180,7 +181,9 @@ class _OrderManagementState extends State<OrderManagement> {
         context.read<SelectedTableProvider>().setAllTableOrders(orders);
         setState(() {
           filterItemData = getItemAmount(orders);
-          total = orders.map((item) => item.total).reduce((a, b) => a + b);
+          total = orders
+              .map((item) => item.total.truncate())
+              .reduce((a, b) => a + b);
         });
       });
     }
@@ -376,7 +379,8 @@ class _OrderManagementState extends State<OrderManagement> {
                               ),
                             ),
                             SizedBox(
-                              child: Text("所有訂單總額：\$${total / 100}"),
+                              child:
+                                  Text("所有訂單總額：\$${(total / 100).truncate()}"),
                             )
                           ],
                         ),
@@ -544,7 +548,7 @@ class BillData extends DataTableSource {
           ],
         ),
       ),
-      DataCell(Text('\$ ${(_data[index].total / 100).toString()}')),
+      DataCell(Text('\$ ${(_data[index].total / 100).truncate().toString()}')),
       DataCell(
         SizedBox(
           height: 30,
