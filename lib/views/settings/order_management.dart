@@ -406,6 +406,22 @@ class _OrderManagementState extends State<OrderManagement> {
                               });
                               onSortColumn(columnIndex, ascending);
                             }),
+                        DataColumn(
+                            label: const Text('服務費'),
+                            onSort: (columnIndex, ascending) {
+                              setState(() {
+                                sort = !sort;
+                              });
+                              onSortColumn(columnIndex, ascending);
+                            }),
+                        DataColumn(
+                            label: const Text('折扣價'),
+                            onSort: (columnIndex, ascending) {
+                              setState(() {
+                                sort = !sort;
+                              });
+                              onSortColumn(columnIndex, ascending);
+                            }),
                         const DataColumn(label: Text('訂單詳情')),
                       ],
                       columnSpacing: 70,
@@ -548,6 +564,9 @@ class BillData extends DataTableSource {
           ],
         ),
       ),
+      DataCell(Text(
+          '\$ ${(_data[index].orders.map((e) => e.item.pricing).sum / 100).truncate().toString()}')),
+      DataCell(Text(' ${(_data[index].offset).toString()}%')),
       DataCell(Text('\$ ${(_data[index].total / 100).truncate().toString()}')),
       DataCell(
         SizedBox(

@@ -8,6 +8,7 @@ class Bill {
   final String? tableLabel;
   final int total;
   final int createdAt;
+  final int offset;
   const Bill(
       {required this.id,
       required this.status,
@@ -15,6 +16,7 @@ class Bill {
       required this.pickUpCode,
       required this.total,
       required this.createdAt,
+      required this.offset,
       this.tableLabel});
   factory Bill.fromJson(Map<String, dynamic> json) {
     return Bill(
@@ -24,6 +26,7 @@ class Bill {
         tableLabel: json['tableLabel'],
         total: json['total'],
         createdAt: json['createdAt'],
+        offset: json['offset'],
         orders: (json['orders'] as Iterable)
             .map((e) => Order.fromJson(e))
             .toList());
